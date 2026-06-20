@@ -1,0 +1,1060 @@
+/* ==========================================================================
+   SISTEMA DE DISEÑO Y VARIABLES DE ESTILO
+   ========================================================================== */
+:root {
+  /* Fuentes */
+  --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* Colores de Fondo y Estructura (Tema Oscuro Deep Space) */
+  --bg-color: hsl(222, 47%, 6%);
+  --card-bg: hsla(223, 47%, 11%, 0.45);
+  --card-bg-solid: hsl(223, 47%, 10%);
+  --card-border: hsla(220, 100%, 99%, 0.06);
+  --card-border-focus: hsla(263, 90%, 65%, 0.4);
+  --glass-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  --inset-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+
+  /* Colores de Texto */
+  --text-main: hsl(210, 38%, 95%);
+  --text-muted: hsl(215, 20%, 65%);
+  --text-dim: hsl(215, 15%, 45%);
+
+  /* Paleta de Acentuación Neón */
+  --accent-purple: hsl(263, 90%, 65%);
+  --accent-purple-glow: hsla(263, 90%, 65%, 0.35);
+  
+  --accent-magenta: hsl(329, 86%, 56%);
+  --accent-magenta-glow: hsla(329, 86%, 56%, 0.35);
+  
+  --accent-cyan: hsl(188, 86%, 53%);
+  --accent-cyan-glow: hsla(188, 86%, 53%, 0.25);
+  
+  --accent-green: hsl(145, 80%, 48%);
+  --accent-red: hsl(355, 85%, 58%);
+
+  /* Botones de la Calculadora */
+  --btn-num-bg: hsla(220, 30%, 96%, 0.04);
+  --btn-num-hover: hsla(220, 30%, 96%, 0.09);
+  --btn-num-text: hsl(210, 38%, 95%);
+
+  --btn-op-bg: hsla(263, 90%, 65%, 0.12);
+  --btn-op-hover: hsla(263, 90%, 65%, 0.22);
+  --btn-op-text: hsl(263, 100%, 80%);
+
+  --btn-sci-bg: hsla(188, 86%, 53%, 0.08);
+  --btn-sci-hover: hsla(188, 86%, 53%, 0.16);
+  --btn-sci-text: hsl(188, 100%, 75%);
+
+  --btn-act-bg: hsla(329, 86%, 56%, 0.12);
+  --btn-act-hover: hsla(329, 86%, 56%, 0.22);
+  --btn-act-text: hsl(329, 100%, 80%);
+
+  --btn-eq-gradient: linear-gradient(135deg, hsl(263, 90%, 65%), hsl(329, 86%, 56%));
+  --btn-eq-shadow: hsla(280, 90%, 60%, 0.4);
+
+  /* Radio de Bordes */
+  --radius-lg: 20px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --radius-round: 50%;
+
+  /* Transiciones */
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==========================================================================
+   ESTILOS GENERALES Y LAYOUT
+   ========================================================================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow-x: hidden;
+  padding: 20px;
+}
+
+/* Esferas decorativas flotantes de fondo */
+.background-decorations {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.sphere {
+  position: absolute;
+  border-radius: var(--radius-round);
+  filter: blur(80px);
+  opacity: 0.45;
+  animation: float-around 25s infinite alternate ease-in-out;
+}
+
+.sphere-1 {
+  top: 15%;
+  left: 10%;
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, var(--accent-purple) 0%, transparent 80%);
+  animation-duration: 20s;
+}
+
+.sphere-2 {
+  bottom: 10%;
+  right: 15%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, var(--accent-magenta) 0%, transparent 80%);
+  animation-duration: 28s;
+  animation-delay: -5s;
+}
+
+.sphere-3 {
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, var(--accent-cyan) 0%, transparent 80%);
+  animation-duration: 24s;
+  animation-delay: -10s;
+}
+
+@keyframes float-around {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(80px, -60px) scale(1.15);
+  }
+  100% {
+    transform: translate(-50px, 40px) scale(0.9);
+  }
+}
+
+/* Contenedor Principal de la App */
+.app-container {
+  width: 100%;
+  max-width: 1280px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  z-index: 10;
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.app-header {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.app-header h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+}
+
+.accent-text {
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple), var(--accent-magenta));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  font-weight: 300;
+}
+
+/* ==========================================================================
+   NAVEGACIÓN POR PESTAÑAS (MÓVIL)
+   ========================================================================== */
+.mobile-tabs {
+  display: none; /* Oculto en escritorio */
+  justify-content: center;
+  background: hsla(223, 47%, 8%, 0.6);
+  padding: 6px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--card-border);
+  backdrop-filter: blur(10px);
+  margin-bottom: 8px;
+}
+
+.tab-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 10px 16px;
+  font-family: var(--font-main);
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tab-btn.active {
+  background: hsla(220, 100%, 99%, 0.08);
+  color: var(--text-main);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ==========================================================================
+   REJILLA PRINCIPAL (DASHBOARD)
+   ========================================================================== */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1.1fr 0.8fr; /* Científica, Matrices, Historial */
+  gap: 20px;
+  align-items: stretch;
+}
+
+.dashboard-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Tarjeta de Vidrio Esmerilado (Glassmorphism) */
+.glass {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  backdrop-filter: blur(25px) saturate(160%);
+  -webkit-backdrop-filter: blur(25px) saturate(160%);
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--radius-lg);
+  transition: border-color var(--transition-normal);
+}
+
+.panel-card {
+  padding: 24px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--card-border);
+  padding-bottom: 12px;
+}
+
+.panel-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+/* ==========================================================================
+   SECCIÓN: CALCULADORA CIENTÍFICA
+   ========================================================================== */
+.sci-status-indicators {
+  display: flex;
+  gap: 8px;
+}
+
+.indicator-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: hsla(220, 100%, 99%, 0.05);
+  color: var(--text-dim);
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
+}
+
+.indicator-badge.active {
+  background: hsla(188, 86%, 53%, 0.12);
+  color: var(--accent-cyan);
+  border-color: hsla(188, 86%, 53%, 0.25);
+}
+
+#memory-indicator {
+  opacity: 0;
+  background: hsla(329, 86%, 56%, 0.12);
+  color: var(--accent-magenta);
+  border-color: hsla(329, 86%, 56%, 0.25);
+}
+
+#memory-indicator.active {
+  opacity: 1;
+}
+
+/* Pantalla de la Calculadora */
+.screen {
+  background-color: rgba(5, 8, 20, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: var(--inset-shadow);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  min-height: 96px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 16px;
+  overflow: hidden;
+  position: relative;
+}
+
+.expression-display {
+  width: 100%;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 300;
+  text-align: right;
+  min-height: 20px;
+  white-space: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 4px;
+}
+
+/* Ocultar barra de desplazamiento */
+.expression-display::-webkit-scrollbar {
+  height: 3px;
+}
+.expression-display::-webkit-scrollbar-thumb {
+  background-color: var(--card-border);
+  border-radius: 2px;
+}
+
+.input-display-container {
+  width: 100%;
+  text-align: right;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+}
+
+.input-display-container::-webkit-scrollbar {
+  height: 3px;
+}
+
+.cursor-input {
+  font-size: 1.85rem;
+  font-weight: 600;
+  color: var(--text-main);
+  letter-spacing: -0.5px;
+  display: inline-block;
+  min-height: 38px;
+}
+
+/* Barra de utilidades (DEG/RAD, Memoria) */
+.utility-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  gap: 10px;
+}
+
+.btn-util {
+  background: hsla(220, 100%, 99%, 0.05);
+  border: 1px solid var(--card-border);
+  color: var(--text-muted);
+  padding: 6px 12px;
+  font-family: var(--font-main);
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-util:hover {
+  background: hsla(220, 100%, 99%, 0.1);
+  color: var(--text-main);
+}
+
+.memory-group {
+  display: flex;
+  gap: 4px;
+}
+
+.btn-mem {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  padding: 6px 8px;
+  font-family: var(--font-main);
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-mem:hover {
+  color: var(--text-main);
+  background: hsla(220, 100%, 99%, 0.05);
+}
+
+/* Rejilla de Botones Científicos + Estándar */
+.sci-keypad {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+/* Estilos de botones individuales */
+.btn {
+  font-family: var(--font-main);
+  font-size: 0.95rem;
+  font-weight: 500;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  height: 44px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color var(--transition-fast), transform 0.05s ease, border-color var(--transition-fast), box-shadow var(--transition-fast);
+  user-select: none;
+}
+
+/* Numeros */
+.btn-number {
+  background-color: var(--btn-num-bg);
+  border-color: hsla(220, 30%, 96%, 0.02);
+  color: var(--btn-num-text);
+}
+.btn-number:hover {
+  background-color: var(--btn-num-hover);
+  border-color: hsla(220, 30%, 96%, 0.05);
+}
+
+/* Operadores (+, -, *, /) */
+.btn-operator {
+  background-color: var(--btn-op-bg);
+  color: var(--btn-op-text);
+  font-size: 1.15rem;
+}
+.btn-operator:hover {
+  background-color: var(--btn-op-hover);
+}
+
+/* Funciones Científicas */
+.btn-sci {
+  background-color: var(--btn-sci-bg);
+  color: var(--btn-sci-text);
+  font-size: 0.85rem;
+  font-weight: 400;
+}
+.btn-sci:hover {
+  background-color: var(--btn-sci-hover);
+}
+
+/* Funciones de Acción (AC, Backspace, %) */
+.btn-action {
+  background-color: var(--btn-act-bg);
+  color: var(--btn-act-text);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.btn-action:hover {
+  background-color: var(--btn-act-hover);
+}
+
+/* Botón de Igualdad (=) */
+.btn-equals {
+  background: var(--btn-eq-gradient);
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border: none;
+  grid-column: 4;
+  grid-row: 7 / 9; /* Ocupa las últimas dos filas en columna 4 */
+  height: auto; /* Permite que tome la altura completa del span */
+  box-shadow: 0 4px 15px var(--btn-eq-shadow);
+}
+.btn-equals:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 6px 20px var(--btn-eq-shadow);
+}
+
+/* Posicionar 1/x para rellenar */
+[data-action="recip"] {
+  grid-column: 5;
+  grid-row: 7 / 9;
+  height: auto;
+}
+
+/* Animación de presión física al hacer clic */
+.btn:active, .key-press-animation {
+  transform: scale(0.93);
+  filter: brightness(0.85);
+}
+
+/* ==========================================================================
+   SECCIÓN: CALCULADORA DE MATRICES
+   ========================================================================== */
+.matrix-global-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-icon {
+  background: hsla(220, 100%, 99%, 0.05);
+  border: 1px solid var(--card-border);
+  color: var(--text-muted);
+  padding: 6px 12px;
+  font-family: var(--font-main);
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all var(--transition-fast);
+}
+
+.btn-icon:hover {
+  background: hsla(220, 100%, 99%, 0.1);
+  color: var(--text-main);
+}
+
+.btn-icon.text-danger:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--accent-red);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+/* Cajas de Matrices A y B */
+.matrices-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.matrix-box {
+  background: rgba(5, 8, 20, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.matrix-box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.matrix-box-header h3 {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.dimension-selectors {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.select-dim {
+  background: hsla(220, 47%, 6%, 0.6);
+  border: 1px solid var(--card-border);
+  color: var(--text-main);
+  font-family: var(--font-main);
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 4px;
+  padding: 2px 4px;
+  cursor: pointer;
+  outline: none;
+}
+
+.select-dim:focus {
+  border-color: var(--accent-cyan);
+}
+
+/* Rejilla de Inputs Matrices */
+.matrix-grid-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 4px 10px;
+}
+
+.matrix-bracket {
+  font-size: 4rem;
+  font-weight: 200;
+  color: var(--text-dim);
+  user-select: none;
+  font-family: monospace;
+}
+
+.matrix-bracket.left {
+  margin-right: 6px;
+}
+
+.matrix-bracket.right {
+  margin-left: 6px;
+}
+
+.matrix-inputs-grid {
+  display: grid;
+  gap: 8px;
+  flex: 1;
+}
+
+.matrix-cell {
+  background: rgba(5, 8, 20, 0.6);
+  border: 1px solid var(--card-border);
+  color: var(--text-main);
+  font-family: var(--font-main);
+  font-size: 1.05rem;
+  font-weight: 500;
+  text-align: center;
+  height: 36px;
+  border-radius: 6px;
+  outline: none;
+  width: 100%;
+  transition: all var(--transition-fast);
+}
+
+.matrix-cell:focus {
+  border-color: var(--accent-cyan);
+  background: rgba(5, 8, 20, 0.8);
+  box-shadow: 0 0 8px rgba(34, 211, 238, 0.2);
+}
+
+/* Chrome, Safari, Edge, Opera: Quitar flechas en input number */
+.matrix-cell::-webkit-outer-spin-button,
+.matrix-cell::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox */
+.matrix-cell[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* Botones de Operaciones Matriciales */
+.matrix-operations {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.ops-row {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-matrix-op, .btn-matrix-op-secondary, .btn-scalar-op {
+  flex: 1;
+  font-family: var(--font-main);
+  font-size: 0.85rem;
+  font-weight: 600;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
+}
+
+.btn-matrix-op {
+  background: hsla(263, 90%, 65%, 0.15);
+  color: hsl(263, 100%, 80%);
+  border-color: hsla(263, 90%, 65%, 0.1);
+}
+.btn-matrix-op:hover {
+  background: hsla(263, 90%, 65%, 0.28);
+  box-shadow: 0 0 10px var(--accent-purple-glow);
+}
+
+.btn-matrix-op-secondary {
+  background: hsla(220, 100%, 99%, 0.04);
+  color: var(--text-muted);
+  border-color: var(--card-border);
+}
+.btn-matrix-op-secondary:hover {
+  background: hsla(220, 100%, 99%, 0.08);
+  color: var(--text-main);
+}
+
+/* Multiplicación Escalar */
+.scalar-multiplication-box {
+  background: rgba(5, 8, 20, 0.2);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.scalar-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.scalar-input-group label {
+  white-space: nowrap;
+}
+
+.scalar-input-group input {
+  flex: 1;
+  background: rgba(5, 8, 20, 0.6);
+  border: 1px solid var(--card-border);
+  color: var(--text-main);
+  font-family: var(--font-main);
+  font-size: 0.85rem;
+  font-weight: 500;
+  height: 28px;
+  border-radius: 4px;
+  text-align: center;
+  outline: none;
+}
+
+.scalar-input-group input:focus {
+  border-color: var(--accent-magenta);
+}
+
+.btn-scalar-util {
+  background: hsla(329, 86%, 56%, 0.08);
+  border: 1px solid hsla(329, 86%, 56%, 0.2);
+  color: hsl(329, 100%, 80%);
+  padding: 4px 8px;
+  font-family: var(--font-main);
+  font-size: 0.7rem;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.btn-scalar-util:hover {
+  background: hsla(329, 86%, 56%, 0.18);
+}
+
+.scalar-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-scalar-op {
+  background: hsla(329, 86%, 56%, 0.12);
+  color: hsl(329, 100%, 80%);
+  border-color: hsla(329, 86%, 56%, 0.1);
+  height: 32px;
+  font-size: 0.8rem;
+}
+.btn-scalar-op:hover {
+  background: hsla(329, 86%, 56%, 0.22);
+  box-shadow: 0 0 8px var(--accent-magenta-glow);
+}
+
+/* Contenedor de Resultado Matricial */
+.matrix-result-container {
+  background: rgba(5, 8, 20, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 120px;
+}
+
+.result-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--card-border);
+  padding-bottom: 4px;
+}
+
+.matrix-result-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  font-size: 0.9rem;
+  color: var(--text-dim);
+}
+
+.matrix-result-placeholder {
+  text-align: center;
+  font-style: italic;
+  font-size: 0.8rem;
+}
+
+/* Contenedor del Valor Escalar en el Resultado */
+.matrix-scalar-result {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--accent-cyan);
+  text-shadow: 0 0 10px rgba(34, 211, 238, 0.2);
+}
+
+/* Mensaje de Error en Matrices */
+.matrix-error-result {
+  color: var(--accent-red);
+  font-size: 0.8rem;
+  text-align: center;
+  font-weight: 500;
+  background: rgba(239, 68, 68, 0.08);
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(239, 68, 68, 0.15);
+}
+
+/* Acciones posteriores al Resultado */
+.matrix-result-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.btn-action-res {
+  flex: 1;
+  background: hsla(220, 100%, 99%, 0.05);
+  border: 1px solid var(--card-border);
+  color: var(--text-muted);
+  font-family: var(--font-main);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 6px 4px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: center;
+}
+
+.btn-action-res:hover {
+  background: hsla(220, 100%, 99%, 0.1);
+  color: var(--text-main);
+  border-color: var(--accent-cyan);
+}
+
+/* ==========================================================================
+   SECCIÓN: HISTORIAL DE OPERACIONES
+   ========================================================================== */
+.history-panel-card {
+  height: 100%;
+}
+
+.btn-clear-history {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-family: var(--font-main);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: color var(--transition-fast);
+}
+
+.btn-clear-history:hover {
+  color: var(--accent-red);
+}
+
+.history-list-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 480px;
+  padding-right: 4px;
+}
+
+/* Barra de scroll del Historial */
+.history-list-wrapper::-webkit-scrollbar {
+  width: 4px;
+}
+.history-list-wrapper::-webkit-scrollbar-thumb {
+  background-color: var(--card-border);
+  border-radius: 2px;
+}
+
+.history-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.history-empty {
+  text-align: center;
+  color: var(--text-dim);
+  font-style: italic;
+  font-size: 0.85rem;
+  padding-top: 30px;
+}
+
+.history-item {
+  background: hsla(220, 100%, 99%, 0.02);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.history-item:hover {
+  background: hsla(220, 100%, 99%, 0.05);
+  border-color: var(--accent-purple);
+  transform: translateY(-1px);
+}
+
+.history-item-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  align-self: flex-start;
+  margin-bottom: 2px;
+}
+
+.badge-sci {
+  background: hsla(188, 86%, 53%, 0.1);
+  color: var(--accent-cyan);
+}
+
+.badge-matrix {
+  background: hsla(263, 90%, 65%, 0.1);
+  color: var(--accent-purple);
+}
+
+.history-expr {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  text-align: right;
+  width: 100%;
+  white-space: nowrap;
+  overflow-x: auto;
+  font-family: monospace;
+}
+
+.history-result {
+  color: var(--text-main);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: right;
+  font-family: monospace;
+}
+
+/* ==========================================================================
+   RESPONSIVIDAD Y AJUSTES MÓVILES
+   ========================================================================== */
+@media (max-width: 1024px) {
+  /* En tablets, cambiamos a dos columnas principales y bajamos el historial */
+  .dashboard-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  #panel-history {
+    grid-column: span 2;
+  }
+  .history-list-wrapper {
+    max-height: 250px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* En teléfonos, activamos la navegación por pestañas */
+  body {
+    padding: 12px;
+    align-items: flex-start;
+  }
+
+  .app-container {
+    gap: 12px;
+  }
+
+  .app-header h1 {
+    font-size: 1.6rem;
+  }
+  .subtitle {
+    font-size: 0.85rem;
+  }
+
+  .mobile-tabs {
+    display: flex;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  /* Ocultar todos los paneles por defecto en móvil, excepto el activo */
+  .dashboard-panel {
+    display: none;
+    animation: fadeIn var(--transition-normal);
+  }
+
+  .dashboard-panel.active-tab {
+    display: flex;
+  }
+
+  #panel-history {
+    grid-column: span 1;
+  }
+
+  .panel-card {
+    padding: 16px;
+    border-radius: var(--radius-md);
+  }
+
+  .matrices-container {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .matrix-bracket {
+    font-size: 3.5rem;
+  }
+  
+  .history-list-wrapper {
+    max-height: 380px;
+  }
+}
