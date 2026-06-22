@@ -1,38 +1,97 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../widgets/glass_container.dart';
 import '../widgets/calc_button.dart';
 import '../utils/calculator_state.dart';
 
-class ScientificScreen extends StatelessWidget {
+class ScientificScreen extends StatefulWidget {
   final CalculatorState state;
 
-  const ScientificScreen({Key? key, required this.state}) : super(key: key);
+  const ScientificScreen({super.key, required this.state});
+
+  @override
+  State<ScientificScreen> createState() => _ScientificScreenState();
+}
+
+class _ScientificScreenState extends State<ScientificScreen> {
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _handleKeyEvent(KeyEvent event) {
+    if (event is KeyDownEvent) {
+      final key = event.logicalKey;
+      final char = event.character;
+
+      // Evaluar la tecla Enter o signo igual (=)
+      if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.numpadEnter || char == '=') {
+        widget.state.evaluateScientific();
+      }
+      // Borrar dígito anterior (Backspace)
+      else if (key == LogicalKeyboardKey.backspace) {
+        widget.state.handleBackspace();
+      }
+      // Borrar todo (AC) mediante Delete o Escape
+      else if (key == LogicalKeyboardKey.delete || key == LogicalKeyboardKey.escape) {
+        widget.state.handleClearAll();
+      }
+      // Capturar números, operadores y símbolos matemáticos válidos
+      else if (char != null && RegExp(r'^[\d\+\-\*\/\^\(\)\%\.]$').hasMatch(char)) {
+        if (char == '.') {
+          widget.state.handleDecimalPoint();
+        } else {
+          widget.state.handleValInput(char);
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: state,
+      listenable: widget.state,
       builder: (context, _) {
-        return Column(
-          children: [
-            // Pantalla (Visor de expresión y resultado)
-            _buildScreen(context),
-            const SizedBox(height: 12),
-            // Fila de controles rápidos (DEG/RAD y Memoria)
-            _buildUtilityRow(context),
-            const SizedBox(height: 12),
-            // Teclado
-            Expanded(
-              child: _buildKeypad(context),
+        return Focus(
+          focusNode: _focusNode,
+          autofocus: true,
+          onKeyEvent: (FocusNode node, KeyEvent event) {
+            _handleKeyEvent(event);
+            return KeyEventResult.handled;
+          },
+          child: GestureDetector(
+            onTap: () {
+              if (!_focusNode.hasFocus) {
+                _focusNode.requestFocus();
+              }
+            },
+            behavior: HitTestBehavior.opaque,
+            child: Column(
+              children: [
+                // Pantalla (Visor de expresión y resultado)
+                _buildScreen(context),
+                const SizedBox(height: 12),
+                // Fila de controles rápidos (DEG/RAD y Memoria)
+                _buildUtilityRow(context),
+                const SizedBox(height: 12),
+                // Teclado
+                Expanded(
+                  child: _buildKeypad(context),
+                ),
+              ],
             ),
-          ],
+          ),
         );
       },
     );
   }
 
   Widget _buildScreen(BuildContext context) {
+    final state = widget.state;
     return GlassContainer(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
       child: Column(
@@ -49,7 +108,7 @@ class ScientificScreen extends StatelessWidget {
                 state.expressionText,
                 style: GoogleFonts.outfit(
                   fontSize: 18,
-                  color: Colors.white.withOpacity(0.5),
+                  color: Colors.white.withValues(alpha: 0.5),
                   letterSpacing: 1.0,
                 ),
               ),
@@ -87,6 +146,7 @@ class ScientificScreen extends StatelessWidget {
   }
 
   Widget _buildUtilityRow(BuildContext context) {
+    final state = widget.state;
     return Row(
       children: [
         // Botón DEG / RAD
@@ -96,9 +156,9 @@ class ScientificScreen extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
+              color: Colors.white.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.white.withOpacity(0.08)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
             ),
             child: Text(
               state.angleMode,
@@ -116,7 +176,7 @@ class ScientificScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.orange.withOpacity(0.15),
+              color: Colors.orange.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
@@ -154,7 +214,7 @@ class ScientificScreen extends StatelessWidget {
               style: GoogleFonts.outfit(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: Colors.white.withOpacity(0.6),
+                color: Colors.white.withValues(alpha: 0.6),
               ),
             ),
           ),
@@ -164,6 +224,7 @@ class ScientificScreen extends StatelessWidget {
   }
 
   Widget _buildKeypad(BuildContext context) {
+    final state = widget.state;
     return Column(
       children: [
         // Fila 1: sin, cos, tan, (, )
@@ -208,9 +269,9 @@ class ScientificScreen extends StatelessWidget {
             children: [
               CalcButton(text: 'AC', type: ButtonType.action, onTap: () => state.handleClearAll()),
               CalcButton(
-                child: const Icon(Icons.backspace_outlined, color: Colors.white70, size: 20),
                 type: ButtonType.action,
                 onTap: () => state.handleBackspace(),
+                child: const Icon(Icons.backspace_outlined, color: Colors.white70, size: 20),
               ),
               CalcButton(text: '%', type: ButtonType.action, onTap: () => state.handleValInput('%')),
               CalcButton(text: '÷', type: ButtonType.operator, onTap: () => state.handleValInput('/')),
@@ -255,7 +316,6 @@ class ScientificScreen extends StatelessWidget {
           ),
         ),
         // Fila 8: ±, 0, .
-        // Para balancear, haremos que el 0 ocupe más espacio
         Expanded(
           child: Row(
             children: [

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'screens/home_screen.dart';
+import 'screens/splash_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,7 +17,7 @@ void main() {
 }
 
 class ScientificMatrixCalculatorApp extends StatelessWidget {
-  const ScientificMatrixCalculatorApp({Key? key}) : super(key: key);
+  const ScientificMatrixCalculatorApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,7 @@ class ScientificMatrixCalculatorApp extends StatelessWidget {
         colorScheme: const ColorScheme.dark(
           primary: Color(0xFF6366F1),
           secondary: Color(0xFFC084FC),
-          background: Color(0xFF07050E),
+          surface: Color(0xFF07050E),
         ),
         tooltipTheme: TooltipThemeData(
           decoration: BoxDecoration(
@@ -43,7 +43,7 @@ class ScientificMatrixCalculatorApp extends StatelessWidget {
           textStyle: const TextStyle(color: Colors.white, fontSize: 12),
         ),
       ),
-      home: const HomeScreen(),
+      home: const SplashScreen(),
     );
   }
 }

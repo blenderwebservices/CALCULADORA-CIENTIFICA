@@ -366,7 +366,7 @@ class CalculatorState extends ChangeNotifier {
     scalarResult = null;
 
     if (matrixARows != matrixBRows || matrixACols != matrixBCols) {
-      matrixError = 'Error de dimensión: Las dimensiones deben ser idénticas. (A: ${matrixARows}x${matrixACols}, B: ${matrixBRows}x${matrixBCols})';
+      matrixError = 'Error de dimensión: Las dimensiones deben ser idénticas. (A: ${matrixARows}x$matrixACols, B: ${matrixBRows}x$matrixBCols)';
       notifyListeners();
       return;
     }
@@ -398,7 +398,7 @@ class CalculatorState extends ChangeNotifier {
     scalarResult = null;
 
     if (matrixARows != matrixBRows || matrixACols != matrixBCols) {
-      matrixError = 'Error de dimensión: Las dimensiones deben ser idénticas. (A: ${matrixARows}x${matrixACols}, B: ${matrixBRows}x${matrixBCols})';
+      matrixError = 'Error de dimensión: Las dimensiones deben ser idénticas. (A: ${matrixARows}x$matrixACols, B: ${matrixBRows}x$matrixBCols)';
       notifyListeners();
       return;
     }

@@ -9,10 +9,10 @@ class HistoryScreen extends StatelessWidget {
   final Function(String)? onTabChangeRequested;
 
   const HistoryScreen({
-    Key? key,
+    super.key,
     required this.state,
     this.onTabChangeRequested,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -58,9 +58,9 @@ class HistoryScreen extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.redAccent.withOpacity(0.1),
+                color: Colors.redAccent.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.redAccent.withOpacity(0.2)),
+                border: Border.all(color: Colors.redAccent.withValues(alpha: 0.2)),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -92,7 +92,7 @@ class HistoryScreen extends StatelessWidget {
             Icon(
               Icons.history_toggle_off_outlined,
               size: 44,
-              color: Colors.white.withOpacity(0.25),
+              color: Colors.white.withValues(alpha: 0.25),
             ),
             const SizedBox(height: 12),
             Text(
@@ -144,13 +144,13 @@ class HistoryScreen extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
                           color: isSci 
-                              ? Colors.deepPurple.withOpacity(0.2) 
-                              : Colors.orange.withOpacity(0.2),
+                              ? Colors.deepPurple.withValues(alpha: 0.2) 
+                              : Colors.orange.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(6),
                           border: Border.all(
                             color: isSci 
-                                ? Colors.deepPurple.withOpacity(0.3) 
-                                : Colors.orange.withOpacity(0.3),
+                                ? Colors.deepPurple.withValues(alpha: 0.3) 
+                                : Colors.orange.withValues(alpha: 0.3),
                           ),
                         ),
                         child: Text(

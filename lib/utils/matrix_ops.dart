@@ -145,6 +145,6 @@ class MatrixOps {
   /// Formatea la matriz para representarla de manera amigable en el historial.
   /// Ej: [[1.0, 2.0], [3.0, 4.0]] -> "[1, 2; 3, 4]"
   static String formatMatrix(List<List<double>> m) {
-    return '[' + m.map((row) => row.map((val) => formatDouble(val)).join(', ')).join('; ') + ']';
+    return '[${m.map((row) => row.map((val) => formatDouble(val)).join(', ')).join('; ')}]';
   }
 }

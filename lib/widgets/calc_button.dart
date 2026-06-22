@@ -18,14 +18,14 @@ class CalcButton extends StatefulWidget {
   final String? tooltip;
 
   const CalcButton({
-    Key? key,
+    super.key,
     this.text,
     this.child,
     required this.onTap,
     this.type = ButtonType.number,
     this.flex = 1,
     this.tooltip,
-  }) : super(key: key);
+  });
 
   @override
   _CalcButtonState createState() => _CalcButtonState();
@@ -58,20 +58,20 @@ class _CalcButtonState extends State<CalcButton> with SingleTickerProviderStateM
     switch (widget.type) {
       case ButtonType.number:
         return _isHovered 
-            ? Colors.white.withOpacity(0.12) 
-            : Colors.white.withOpacity(0.05);
+            ? Colors.white.withValues(alpha: 0.12) 
+            : Colors.white.withValues(alpha: 0.05);
       case ButtonType.scientific:
         return _isHovered 
-            ? Colors.deepPurple.withOpacity(0.25) 
-            : Colors.deepPurple.withOpacity(0.12);
+            ? Colors.deepPurple.withValues(alpha: 0.25) 
+            : Colors.deepPurple.withValues(alpha: 0.12);
       case ButtonType.operator:
         return _isHovered 
-            ? Colors.orange.withOpacity(0.4) 
-            : Colors.orange.withOpacity(0.25);
+            ? Colors.orange.withValues(alpha: 0.4) 
+            : Colors.orange.withValues(alpha: 0.25);
       case ButtonType.action:
         return _isHovered 
-            ? Colors.redAccent.withOpacity(0.25) 
-            : Colors.white.withOpacity(0.08);
+            ? Colors.redAccent.withValues(alpha: 0.25) 
+            : Colors.white.withValues(alpha: 0.08);
       case ButtonType.equals:
         return const Color(0xFF6366F1); // Indigo accent color
     }
@@ -130,7 +130,12 @@ class _CalcButtonState extends State<CalcButton> with SingleTickerProviderStateM
     final FontWeight fontWeight = _getFontWeight();
 
     Widget buttonBody = InkWell(
-      onTap: () {}, // Handled by gesture detector for custom scale animation
+      onTap: () {
+        _controller.reverse();
+        widget.onTap();
+      },
+      onTapDown: (_) => _controller.forward(),
+      onTapCancel: () => _controller.reverse(),
       borderRadius: BorderRadius.circular(12),
       child: Center(
         child: widget.child ?? Text(
@@ -157,38 +162,30 @@ class _CalcButtonState extends State<CalcButton> with SingleTickerProviderStateM
       child: MouseRegion(
         onEnter: (_) => setState(() => _isHovered = true),
         onExit: (_) => setState(() => _isHovered = false),
-        child: GestureDetector(
-          onTapDown: (_) => _controller.forward(),
-          onTapUp: (_) {
-            _controller.reverse();
-            widget.onTap();
-          },
-          onTapCancel: () => _controller.reverse(),
-          child: ScaleTransition(
-            scale: _scaleAnimation,
-            child: Container(
-              margin: const EdgeInsets.all(4.0),
-              decoration: BoxDecoration(
-                color: bgColor,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: widget.type == ButtonType.equals
-                      ? const Color(0xFF818CF8).withOpacity(0.5)
-                      : Colors.white.withOpacity(0.06),
-                  width: 1.0,
-                ),
-                boxShadow: widget.type == ButtonType.equals
-                    ? [
-                        BoxShadow(
-                          color: const Color(0xFF6366F1).withOpacity(0.4),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ]
-                    : [],
+        child: ScaleTransition(
+          scale: _scaleAnimation,
+          child: Container(
+            margin: const EdgeInsets.all(4.0),
+            decoration: BoxDecoration(
+              color: bgColor,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: widget.type == ButtonType.equals
+                    ? const Color(0xFF818CF8).withValues(alpha: 0.5)
+                    : Colors.white.withValues(alpha: 0.06),
+                width: 1.0,
               ),
-              child: buttonBody,
+              boxShadow: widget.type == ButtonType.equals
+                  ? [
+                      BoxShadow(
+                        color: const Color(0xFF6366F1).withValues(alpha: 0.4),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ]
+                  : [],
             ),
+            child: buttonBody,
           ),
         ),
       ),

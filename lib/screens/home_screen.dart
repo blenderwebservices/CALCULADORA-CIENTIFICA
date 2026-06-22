@@ -6,7 +6,7 @@ import 'matrix_screen.dart';
 import 'history_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -100,8 +100,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  const Color(0xFF7C3AED).withOpacity(0.18), // Violet
-                  const Color(0xFF7C3AED).withOpacity(0.0),
+                  const Color(0xFF7C3AED).withValues(alpha: 0.18), // Violet
+                  const Color(0xFF7C3AED).withValues(alpha: 0.0),
                 ],
               ),
             ),
@@ -118,8 +118,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  const Color(0xFF4F46E5).withOpacity(0.22), // Indigo
-                  const Color(0xFF4F46E5).withOpacity(0.0),
+                  const Color(0xFF4F46E5).withValues(alpha: 0.22), // Indigo
+                  const Color(0xFF4F46E5).withValues(alpha: 0.0),
                 ],
               ),
             ),
@@ -136,8 +136,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  const Color(0xFFEC4899).withOpacity(0.12), // Pink/Magenta
-                  const Color(0xFFEC4899).withOpacity(0.0),
+                  const Color(0xFFEC4899).withValues(alpha: 0.12), // Pink/Magenta
+                  const Color(0xFFEC4899).withValues(alpha: 0.0),
                 ],
               ),
             ),
@@ -227,16 +227,16 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         Container(
           margin: const EdgeInsets.only(bottom: 12),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.04),
+            color: Colors.white.withValues(alpha: 0.04),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.white.withOpacity(0.08)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
           ),
           child: TabBar(
             controller: _tabController,
             indicator: BoxDecoration(
-              color: Colors.white.withOpacity(0.08),
+              color: Colors.white.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.white.withOpacity(0.12)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
             ),
             labelColor: const Color(0xFFC084FC), // soft purple
             unselectedLabelColor: Colors.white60,

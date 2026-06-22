@@ -7,7 +7,7 @@ import '../utils/matrix_ops.dart';
 class MatrixScreen extends StatefulWidget {
   final CalculatorState state;
 
-  const MatrixScreen({Key? key, required this.state}) : super(key: key);
+  const MatrixScreen({super.key, required this.state});
 
   @override
   _MatrixScreenState createState() => _MatrixScreenState();
@@ -177,9 +177,9 @@ class _MatrixScreenState extends State<MatrixScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.04),
+          color: Colors.white.withValues(alpha: 0.04),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.white.withOpacity(0.06)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -241,7 +241,7 @@ class _MatrixScreenState extends State<MatrixScreen> {
                 style: GoogleFonts.outfit(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white.withOpacity(0.9),
+                  color: Colors.white.withValues(alpha: 0.9),
                 ),
               ),
               // Selectores de dimensión
@@ -293,12 +293,12 @@ class _MatrixScreenState extends State<MatrixScreen> {
                   style: GoogleFonts.outfit(
                     fontSize: rows == 2 ? 80 : 44,
                     fontWeight: FontWeight.w200,
-                    color: Colors.white.withOpacity(0.3),
+                    color: Colors.white.withValues(alpha: 0.3),
                   ),
                 ),
                 const SizedBox(width: 6),
                 // Celdas
-                Container(
+                SizedBox(
                   width: 140,
                   child: Column(
                     children: List.generate(rows, (r) {
@@ -323,12 +323,12 @@ class _MatrixScreenState extends State<MatrixScreen> {
                                 ),
                                 decoration: InputDecoration(
                                   filled: true,
-                                  fillColor: Colors.white.withOpacity(0.03),
+                                  fillColor: Colors.white.withValues(alpha: 0.03),
                                   contentPadding: EdgeInsets.zero,
                                   hintText: '0',
                                   hintStyle: GoogleFonts.outfit(color: Colors.white24),
                                   enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.white.withOpacity(0.08)),
+                                    borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   focusedBorder: OutlineInputBorder(
@@ -359,7 +359,7 @@ class _MatrixScreenState extends State<MatrixScreen> {
                   style: GoogleFonts.outfit(
                     fontSize: rows == 2 ? 80 : 44,
                     fontWeight: FontWeight.w200,
-                    color: Colors.white.withOpacity(0.3),
+                    color: Colors.white.withValues(alpha: 0.3),
                   ),
                 ),
               ],
@@ -374,9 +374,9 @@ class _MatrixScreenState extends State<MatrixScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.04),
+        color: Colors.white.withValues(alpha: 0.04),
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: Colors.white.withOpacity(0.08)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<int>(
@@ -406,7 +406,7 @@ class _MatrixScreenState extends State<MatrixScreen> {
             style: GoogleFonts.outfit(
               fontSize: 14,
               fontWeight: FontWeight.bold,
-              color: Colors.white.withOpacity(0.7),
+              color: Colors.white.withValues(alpha: 0.7),
             ),
           ),
           const SizedBox(height: 8),
@@ -452,8 +452,8 @@ class _MatrixScreenState extends State<MatrixScreen> {
           onPressed: onTap,
           style: ElevatedButton.styleFrom(
             backgroundColor: isSecondary 
-                ? Colors.deepPurple.withOpacity(0.2) 
-                : Colors.orange.withOpacity(0.2),
+                ? Colors.deepPurple.withValues(alpha: 0.2) 
+                : Colors.orange.withValues(alpha: 0.2),
             foregroundColor: isSecondary ? const Color(0xFFC084FC) : const Color(0xFFFB923C),
             elevation: 0,
             padding: const EdgeInsets.symmetric(vertical: 12),
@@ -461,8 +461,8 @@ class _MatrixScreenState extends State<MatrixScreen> {
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(
                 color: isSecondary 
-                    ? Colors.deepPurple.withOpacity(0.3) 
-                    : Colors.orange.withOpacity(0.3),
+                    ? Colors.deepPurple.withValues(alpha: 0.3) 
+                    : Colors.orange.withValues(alpha: 0.3),
               ),
             ),
           ),
@@ -482,9 +482,9 @@ class _MatrixScreenState extends State<MatrixScreen> {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.02),
+        color: Colors.white.withValues(alpha: 0.02),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Row(
         children: [
@@ -493,7 +493,7 @@ class _MatrixScreenState extends State<MatrixScreen> {
             style: GoogleFonts.outfit(fontSize: 13, color: Colors.white70),
           ),
           const SizedBox(width: 8),
-          Container(
+          SizedBox(
             width: 70,
             height: 32,
             child: TextField(
@@ -503,10 +503,10 @@ class _MatrixScreenState extends State<MatrixScreen> {
               style: GoogleFonts.outfit(fontSize: 13, color: Colors.white, fontWeight: FontWeight.bold),
               decoration: InputDecoration(
                 filled: true,
-                fillColor: Colors.white.withOpacity(0.04),
+                fillColor: Colors.white.withValues(alpha: 0.04),
                 contentPadding: EdgeInsets.zero,
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
+                  borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 focusedBorder: OutlineInputBorder(
@@ -535,7 +535,7 @@ class _MatrixScreenState extends State<MatrixScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.06),
+                color: Colors.white.withValues(alpha: 0.06),
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
@@ -562,7 +562,7 @@ class _MatrixScreenState extends State<MatrixScreen> {
     return ElevatedButton(
       onPressed: onTap,
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white.withOpacity(0.08),
+        backgroundColor: Colors.white.withValues(alpha: 0.08),
         foregroundColor: Colors.white,
         elevation: 0,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -570,7 +570,7 @@ class _MatrixScreenState extends State<MatrixScreen> {
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(6),
-          side: BorderSide(color: Colors.white.withOpacity(0.1)),
+          side: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
         ),
       ),
       child: Text(
@@ -593,7 +593,7 @@ class _MatrixScreenState extends State<MatrixScreen> {
             style: GoogleFonts.outfit(
               fontSize: 15,
               fontWeight: FontWeight.bold,
-              color: Colors.white.withOpacity(0.8),
+              color: Colors.white.withValues(alpha: 0.8),
             ),
           ),
           const SizedBox(height: 16),
@@ -676,12 +676,12 @@ class _MatrixScreenState extends State<MatrixScreen> {
               style: GoogleFonts.outfit(
                 fontSize: rCount == 2 ? 80 : 44,
                 fontWeight: FontWeight.w200,
-                color: Colors.white.withOpacity(0.3),
+                color: Colors.white.withValues(alpha: 0.3),
               ),
             ),
             const SizedBox(width: 6),
             // Rejilla de Celdas
-            Container(
+            SizedBox(
               width: 140,
               child: Column(
                 children: List.generate(rCount, (r) {
@@ -692,16 +692,16 @@ class _MatrixScreenState extends State<MatrixScreen> {
                           height: 36,
                           margin: const EdgeInsets.all(4),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.02),
+                            color: Colors.white.withValues(alpha: 0.02),
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.white.withOpacity(0.06)),
+                            border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
                           ),
                           child: Center(
                             child: Text(
                               MatrixOps.formatDouble(res[r][c]),
                               style: GoogleFonts.outfit(
                                 fontSize: 13,
-                                color: Colors.white.withOpacity(0.9),
+                                color: Colors.white.withValues(alpha: 0.9),
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -720,7 +720,7 @@ class _MatrixScreenState extends State<MatrixScreen> {
               style: GoogleFonts.outfit(
                 fontSize: rCount == 2 ? 80 : 44,
                 fontWeight: FontWeight.w200,
-                color: Colors.white.withOpacity(0.3),
+                color: Colors.white.withValues(alpha: 0.3),
               ),
             ),
           ],
@@ -751,14 +751,14 @@ class _MatrixScreenState extends State<MatrixScreen> {
       child: ElevatedButton(
         onPressed: onTap,
         style: ElevatedButton.styleFrom(
-          backgroundColor: isAccent ? const Color(0xFF6366F1) : Colors.white.withOpacity(0.06),
+          backgroundColor: isAccent ? const Color(0xFF6366F1) : Colors.white.withValues(alpha: 0.06),
           foregroundColor: Colors.white,
           elevation: 0,
           padding: const EdgeInsets.symmetric(vertical: 10),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
             side: BorderSide(
-              color: isAccent ? Colors.indigo.withOpacity(0.5) : Colors.white.withOpacity(0.08),
+              color: isAccent ? Colors.indigo.withValues(alpha: 0.5) : Colors.white.withValues(alpha: 0.08),
             ),
           ),
         ),
