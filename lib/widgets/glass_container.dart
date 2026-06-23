@@ -5,8 +5,8 @@ class GlassContainer extends StatelessWidget {
   final Widget child;
   final double borderRadius;
   final double blur;
-  final Color color;
-  final Color borderColor;
+  final Color? color;
+  final Color? borderColor;
   final EdgeInsetsGeometry padding;
   final EdgeInsetsGeometry? margin;
   final double? width;
@@ -17,8 +17,8 @@ class GlassContainer extends StatelessWidget {
     required this.child,
     this.borderRadius = 20.0,
     this.blur = 15.0,
-    this.color = const Color(0x0FFFFFFF), // semi-transparent white
-    this.borderColor = const Color(0x1AFFFFFF), // soft white border
+    this.color,
+    this.borderColor,
     this.padding = const EdgeInsets.all(16.0),
     this.margin,
     this.width,
@@ -27,6 +27,16 @@ class GlassContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    final containerColor = color ?? (isDark 
+        ? const Color(0x0FFFFFFF) // semi-transparent white for dark mode
+        : Colors.white.withValues(alpha: 0.45)); // more opaque white for light mode
+        
+    final containerBorderColor = borderColor ?? (isDark 
+        ? const Color(0x1AFFFFFF) // soft white border for dark mode
+        : Colors.black.withValues(alpha: 0.08)); // soft dark border for light mode
+
     return Container(
       width: width,
       height: height,
@@ -34,7 +44,7 @@ class GlassContainer extends StatelessWidget {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.15),
+            color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.06),
             blurRadius: 24,
             offset: const Offset(0, 8),
           ),
@@ -47,10 +57,10 @@ class GlassContainer extends StatelessWidget {
           child: Container(
             padding: padding,
             decoration: BoxDecoration(
-              color: color,
+              color: containerColor,
               borderRadius: BorderRadius.circular(borderRadius),
               border: Border.all(
-                color: borderColor,
+                color: containerBorderColor,
                 width: 1.5,
               ),
             ),
@@ -61,3 +71,4 @@ class GlassContainer extends StatelessWidget {
     );
   }
 }
+

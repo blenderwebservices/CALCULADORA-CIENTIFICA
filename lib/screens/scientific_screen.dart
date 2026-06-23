@@ -92,6 +92,10 @@ class _ScientificScreenState extends State<ScientificScreen> {
 
   Widget _buildScreen(BuildContext context) {
     final state = widget.state;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryText = isDark ? Colors.white : const Color(0xFF0F0C1B);
+    final secondaryText = isDark ? Colors.white.withValues(alpha: 0.5) : Colors.black.withValues(alpha: 0.5);
+
     return GlassContainer(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
       child: Column(
@@ -108,7 +112,7 @@ class _ScientificScreenState extends State<ScientificScreen> {
                 state.expressionText,
                 style: GoogleFonts.outfit(
                   fontSize: 18,
-                  color: Colors.white.withValues(alpha: 0.5),
+                  color: secondaryText,
                   letterSpacing: 1.0,
                 ),
               ),
@@ -131,7 +135,7 @@ class _ScientificScreenState extends State<ScientificScreen> {
                     style: GoogleFonts.outfit(
                       fontSize: 38,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: primaryText,
                     ),
                   ),
                   if (!state.shouldResetScreen)
@@ -147,6 +151,9 @@ class _ScientificScreenState extends State<ScientificScreen> {
 
   Widget _buildUtilityRow(BuildContext context) {
     final state = widget.state;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final secondaryText = isDark ? Colors.white.withValues(alpha: 0.6) : Colors.black.withValues(alpha: 0.6);
+
     return Row(
       children: [
         // Botón DEG / RAD
@@ -156,9 +163,9 @@ class _ScientificScreenState extends State<ScientificScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.05),
+              color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+              border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.08)),
             ),
             child: Text(
               state.angleMode,
@@ -190,16 +197,16 @@ class _ScientificScreenState extends State<ScientificScreen> {
           ),
         const Spacer(),
         // Controles de memoria MC, MR, M+, M-, MS
-        _buildMemoryButton('MC', () => state.memoryClear(), 'Memory Clear'),
-        _buildMemoryButton('MR', () => state.memoryRecall(), 'Memory Recall'),
-        _buildMemoryButton('M+', () => state.memoryAdd(), 'Memory Add'),
-        _buildMemoryButton('M-', () => state.memorySubtract(), 'Memory Subtract'),
-        _buildMemoryButton('MS', () => state.memoryStore(), 'Memory Store'),
+        _buildMemoryButton('MC', () => state.memoryClear(), 'Memory Clear', secondaryText),
+        _buildMemoryButton('MR', () => state.memoryRecall(), 'Memory Recall', secondaryText),
+        _buildMemoryButton('M+', () => state.memoryAdd(), 'Memory Add', secondaryText),
+        _buildMemoryButton('M-', () => state.memorySubtract(), 'Memory Subtract', secondaryText),
+        _buildMemoryButton('MS', () => state.memoryStore(), 'Memory Store', secondaryText),
       ],
     );
   }
 
-  Widget _buildMemoryButton(String label, VoidCallback onTap, String tooltip) {
+  Widget _buildMemoryButton(String label, VoidCallback onTap, String tooltip, Color textColor) {
     return Container(
       margin: const EdgeInsets.only(left: 4),
       child: Tooltip(
@@ -214,7 +221,7 @@ class _ScientificScreenState extends State<ScientificScreen> {
               style: GoogleFonts.outfit(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: Colors.white.withValues(alpha: 0.6),
+                color: textColor,
               ),
             ),
           ),
@@ -222,6 +229,7 @@ class _ScientificScreenState extends State<ScientificScreen> {
       ),
     );
   }
+
 
   Widget _buildKeypad(BuildContext context) {
     final state = widget.state;

@@ -25,12 +25,12 @@ class HistoryScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Encabezado
-            _buildHeader(),
+            _buildHeader(context),
             const SizedBox(height: 12),
             // Lista o mensaje vacío
             Expanded(
               child: items.isEmpty
-                  ? _buildEmptyState()
+                  ? _buildEmptyState(context)
                   : _buildHistoryList(items),
             ),
           ],
@@ -39,7 +39,10 @@ class HistoryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryText = isDark ? Colors.white : const Color(0xFF0F0C1B);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -48,7 +51,7 @@ class HistoryScreen extends StatelessWidget {
           style: GoogleFonts.outfit(
             fontSize: 20,
             fontWeight: FontWeight.w600,
-            color: Colors.white,
+            color: primaryText,
           ),
         ),
         if (state.historyList.isNotEmpty)
@@ -83,7 +86,10 @@ class HistoryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final tertiaryText = isDark ? Colors.white38 : Colors.black38;
+
     return GlassContainer(
       child: Center(
         child: Column(
@@ -92,14 +98,14 @@ class HistoryScreen extends StatelessWidget {
             Icon(
               Icons.history_toggle_off_outlined,
               size: 44,
-              color: Colors.white.withValues(alpha: 0.25),
+              color: tertiaryText,
             ),
             const SizedBox(height: 12),
             Text(
               'No hay operaciones recientes',
               style: GoogleFonts.outfit(
                 fontSize: 14,
-                color: Colors.white30,
+                color: tertiaryText,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -116,6 +122,10 @@ class HistoryScreen extends StatelessWidget {
       itemBuilder: (context, index) {
         final item = items[index];
         final isSci = item.type == 'sci';
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        final primaryText = isDark ? Colors.white : const Color(0xFF0F0C1B);
+        final secondaryText = isDark ? Colors.white60 : Colors.black54;
+        final tertiaryText = isDark ? Colors.white24 : Colors.black26;
 
         return Container(
           margin: const EdgeInsets.only(bottom: 8),
@@ -144,13 +154,13 @@ class HistoryScreen extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
                           color: isSci 
-                              ? Colors.deepPurple.withValues(alpha: 0.2) 
-                              : Colors.orange.withValues(alpha: 0.2),
+                              ? Colors.deepPurple.withValues(alpha: isDark ? 0.2 : 0.08) 
+                              : Colors.orange.withValues(alpha: isDark ? 0.2 : 0.08),
                           borderRadius: BorderRadius.circular(6),
                           border: Border.all(
                             color: isSci 
-                                ? Colors.deepPurple.withValues(alpha: 0.3) 
-                                : Colors.orange.withValues(alpha: 0.3),
+                                ? Colors.deepPurple.withValues(alpha: isDark ? 0.3 : 0.15) 
+                                : Colors.orange.withValues(alpha: isDark ? 0.3 : 0.15),
                           ),
                         ),
                         child: Text(
@@ -158,7 +168,9 @@ class HistoryScreen extends StatelessWidget {
                           style: GoogleFonts.outfit(
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
-                            color: isSci ? const Color(0xFFC084FC) : const Color(0xFFFB923C),
+                            color: isSci 
+                                ? (isDark ? const Color(0xFFC084FC) : Colors.deepPurple) 
+                                : (isDark ? const Color(0xFFFB923C) : Colors.orange.shade800),
                             letterSpacing: 0.5,
                           ),
                         ),
@@ -168,7 +180,7 @@ class HistoryScreen extends StatelessWidget {
                         _formatTime(item.timestamp),
                         style: GoogleFonts.outfit(
                           fontSize: 11,
-                          color: Colors.white24,
+                          color: tertiaryText,
                         ),
                       ),
                     ],
@@ -179,7 +191,7 @@ class HistoryScreen extends StatelessWidget {
                     item.expression,
                     style: GoogleFonts.outfit(
                       fontSize: 14,
-                      color: Colors.white60,
+                      color: secondaryText,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -191,7 +203,7 @@ class HistoryScreen extends StatelessWidget {
                     style: GoogleFonts.outfit(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xEEEEEEEE),
+                      color: primaryText,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,

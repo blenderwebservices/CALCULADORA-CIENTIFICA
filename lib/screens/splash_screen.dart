@@ -66,20 +66,29 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    final primaryText = isDark ? Colors.white : const Color(0xFF0F0C1B);
+    final secondaryText = isDark ? Colors.white30 : Colors.black38;
 
     return Scaffold(
       body: Stack(
         children: [
-          // 1. Fondo de gradiente oscuro (coincide con HomeScreen)
+          // 1. Fondo de gradiente (coincide con HomeScreen)
           Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFF0F0C1B), // Deep dark indigo
-                  Color(0xFF07050E), // Very dark black-purple
-                ],
+                colors: isDark 
+                    ? [
+                        const Color(0xFF0F0C1B), // Deep dark indigo
+                        const Color(0xFF07050E), // Very dark black-purple
+                      ]
+                    : [
+                        const Color(0xFFF3F0FA), // Soft lavender
+                        const Color(0xFFE5E7EB), // Soft gray-blue
+                      ],
               ),
             ),
           ),
@@ -95,7 +104,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    const Color(0xFF7C3AED).withValues(alpha: 0.15), // Violet
+                    const Color(0xFF7C3AED).withValues(alpha: isDark ? 0.15 : 0.1), // Violet
                     const Color(0xFF7C3AED).withValues(alpha: 0.0),
                   ],
                 ),
@@ -112,7 +121,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    const Color(0xFF4F46E5).withValues(alpha: 0.18), // Indigo
+                    const Color(0xFF4F46E5).withValues(alpha: isDark ? 0.18 : 0.12), // Indigo
                     const Color(0xFF4F46E5).withValues(alpha: 0.0),
                   ],
                 ),
@@ -136,11 +145,11 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(28),
                         border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.08),
+                          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.08),
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF6366F1).withValues(alpha: 0.12),
+                            color: const Color(0xFF6366F1).withValues(alpha: isDark ? 0.12 : 0.06),
                             blurRadius: 24,
                             spreadRadius: 2,
                           ),
@@ -165,7 +174,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                           style: GoogleFonts.outfit(
                             fontSize: 26,
                             fontWeight: FontWeight.w400,
-                            color: Colors.white,
+                            color: primaryText,
                           ),
                         ),
                         ShaderMask(
@@ -202,7 +211,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       child: CircularProgressIndicator(
                         strokeWidth: 3,
                         valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF6366F1)),
-                        backgroundColor: Colors.white.withValues(alpha: 0.04),
+                        backgroundColor: isDark ? Colors.white.withValues(alpha: 0.04) : Colors.black.withValues(alpha: 0.04),
                       ),
                     ),
                   ],
@@ -223,7 +232,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   'MATEMÁTICAS AVANZADAS • PREMIUM UI',
                   style: GoogleFonts.outfit(
                     fontSize: 11,
-                    color: Colors.white30,
+                    color: secondaryText,
                     fontWeight: FontWeight.w500,
                     letterSpacing: 1.5,
                   ),

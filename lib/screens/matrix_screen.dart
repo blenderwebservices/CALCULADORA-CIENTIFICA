@@ -132,6 +132,9 @@ class _MatrixScreenState extends State<MatrixScreen> {
   }
 
   Widget _buildHeader() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryText = isDark ? Colors.white : const Color(0xFF0F0C1B);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -140,7 +143,7 @@ class _MatrixScreenState extends State<MatrixScreen> {
           style: GoogleFonts.outfit(
             fontSize: 20,
             fontWeight: FontWeight.w600,
-            color: Colors.white,
+            color: primaryText,
           ),
         ),
         Row(
@@ -171,26 +174,29 @@ class _MatrixScreenState extends State<MatrixScreen> {
     Color? textColor,
     required VoidCallback onTap,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final secondaryText = isDark ? Colors.white70 : Colors.black54;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.04),
+          color: isDark ? Colors.white.withValues(alpha: 0.04) : Colors.black.withValues(alpha: 0.04),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+          border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.black.withValues(alpha: 0.06)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 16, color: textColor ?? Colors.white70),
+            Icon(icon, size: 16, color: textColor ?? secondaryText),
             const SizedBox(width: 4),
             Text(
               label,
               style: GoogleFonts.outfit(
                 fontSize: 12,
-                color: textColor ?? Colors.white70,
+                color: textColor ?? secondaryText,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -227,6 +233,10 @@ class _MatrixScreenState extends State<MatrixScreen> {
     final bool isA = name == 'A';
     final int rows = isA ? widget.state.matrixARows : widget.state.matrixBRows;
     final int cols = isA ? widget.state.matrixACols : widget.state.matrixBCols;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryText = isDark ? Colors.white : const Color(0xFF0F0C1B);
+    final secondaryText = isDark ? Colors.white54 : Colors.black54;
+    final tertiaryText = isDark ? Colors.white24 : Colors.black26;
 
     return GlassContainer(
       padding: const EdgeInsets.all(12),
@@ -241,13 +251,13 @@ class _MatrixScreenState extends State<MatrixScreen> {
                 style: GoogleFonts.outfit(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white.withValues(alpha: 0.9),
+                  color: primaryText.withValues(alpha: 0.9),
                 ),
               ),
               // Selectores de dimensión
               Row(
                 children: [
-                  Text('F:', style: GoogleFonts.outfit(fontSize: 12, color: Colors.white54)),
+                  Text('F:', style: GoogleFonts.outfit(fontSize: 12, color: secondaryText)),
                   const SizedBox(width: 4),
                   _buildDimSelector(
                     value: rows,
@@ -262,7 +272,7 @@ class _MatrixScreenState extends State<MatrixScreen> {
                     },
                   ),
                   const SizedBox(width: 8),
-                  Text('C:', style: GoogleFonts.outfit(fontSize: 12, color: Colors.white54)),
+                  Text('C:', style: GoogleFonts.outfit(fontSize: 12, color: secondaryText)),
                   const SizedBox(width: 4),
                   _buildDimSelector(
                     value: cols,
@@ -293,7 +303,7 @@ class _MatrixScreenState extends State<MatrixScreen> {
                   style: GoogleFonts.outfit(
                     fontSize: rows == 2 ? 80 : 44,
                     fontWeight: FontWeight.w200,
-                    color: Colors.white.withValues(alpha: 0.3),
+                    color: isDark ? Colors.white.withValues(alpha: 0.3) : Colors.black.withValues(alpha: 0.25),
                   ),
                 ),
                 const SizedBox(width: 6),
@@ -318,17 +328,17 @@ class _MatrixScreenState extends State<MatrixScreen> {
                                 textAlign: TextAlign.center,
                                 style: GoogleFonts.outfit(
                                   fontSize: 14,
-                                  color: Colors.white,
+                                  color: primaryText,
                                   fontWeight: FontWeight.w500,
                                 ),
                                 decoration: InputDecoration(
                                   filled: true,
-                                  fillColor: Colors.white.withValues(alpha: 0.03),
+                                  fillColor: isDark ? Colors.white.withValues(alpha: 0.03) : Colors.black.withValues(alpha: 0.03),
                                   contentPadding: EdgeInsets.zero,
                                   hintText: '0',
-                                  hintStyle: GoogleFonts.outfit(color: Colors.white24),
+                                  hintStyle: GoogleFonts.outfit(color: tertiaryText),
                                   enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
+                                    borderSide: BorderSide(color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.08)),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   focusedBorder: OutlineInputBorder(
@@ -359,7 +369,7 @@ class _MatrixScreenState extends State<MatrixScreen> {
                   style: GoogleFonts.outfit(
                     fontSize: rows == 2 ? 80 : 44,
                     fontWeight: FontWeight.w200,
-                    color: Colors.white.withValues(alpha: 0.3),
+                    color: isDark ? Colors.white.withValues(alpha: 0.3) : Colors.black.withValues(alpha: 0.25),
                   ),
                 ),
               ],
@@ -371,19 +381,23 @@ class _MatrixScreenState extends State<MatrixScreen> {
   }
 
   Widget _buildDimSelector({required int value, required ValueChanged<int?> onChanged}) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryText = isDark ? Colors.white : const Color(0xFF0F0C1B);
+    final secondaryText = isDark ? Colors.white70 : Colors.black54;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.04),
+        color: isDark ? Colors.white.withValues(alpha: 0.04) : Colors.black.withValues(alpha: 0.04),
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.08)),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<int>(
           value: value,
-          dropdownColor: const Color(0xFF1E1B2E),
-          style: GoogleFonts.outfit(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold),
-          icon: const Icon(Icons.arrow_drop_down, size: 16, color: Colors.white70),
+          dropdownColor: isDark ? const Color(0xFF1E1B2E) : Colors.white,
+          style: GoogleFonts.outfit(fontSize: 12, color: primaryText, fontWeight: FontWeight.bold),
+          icon: Icon(Icons.arrow_drop_down, size: 16, color: secondaryText),
           isDense: true,
           items: const [
             DropdownMenuItem(value: 1, child: Text('1')),
@@ -396,6 +410,9 @@ class _MatrixScreenState extends State<MatrixScreen> {
   }
 
   Widget _buildOperationsPanel(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final secondaryText = isDark ? Colors.white.withValues(alpha: 0.7) : Colors.black.withValues(alpha: 0.7);
+
     return GlassContainer(
       padding: const EdgeInsets.all(12),
       child: Column(
@@ -406,7 +423,7 @@ class _MatrixScreenState extends State<MatrixScreen> {
             style: GoogleFonts.outfit(
               fontSize: 14,
               fontWeight: FontWeight.bold,
-              color: Colors.white.withValues(alpha: 0.7),
+              color: secondaryText,
             ),
           ),
           const SizedBox(height: 8),
@@ -445,24 +462,31 @@ class _MatrixScreenState extends State<MatrixScreen> {
   }
 
   Widget _buildOpButton(String label, VoidCallback onTap, {bool isSecondary = false}) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color bgColor = isSecondary 
+        ? (isDark ? Colors.deepPurple.withValues(alpha: 0.2) : Colors.deepPurple.withValues(alpha: 0.08))
+        : (isDark ? Colors.orange.withValues(alpha: 0.2) : Colors.orange.withValues(alpha: 0.08));
+    final Color fgColor = isSecondary 
+        ? (isDark ? const Color(0xFFC084FC) : Colors.deepPurple)
+        : (isDark ? const Color(0xFFFB923C) : Colors.orange.shade800);
+    final Color borderColor = isSecondary 
+        ? (isDark ? Colors.deepPurple.withValues(alpha: 0.3) : Colors.deepPurple.withValues(alpha: 0.15))
+        : (isDark ? Colors.orange.withValues(alpha: 0.3) : Colors.orange.withValues(alpha: 0.15));
+
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 3),
         child: ElevatedButton(
           onPressed: onTap,
           style: ElevatedButton.styleFrom(
-            backgroundColor: isSecondary 
-                ? Colors.deepPurple.withValues(alpha: 0.2) 
-                : Colors.orange.withValues(alpha: 0.2),
-            foregroundColor: isSecondary ? const Color(0xFFC084FC) : const Color(0xFFFB923C),
+            backgroundColor: bgColor,
+            foregroundColor: fgColor,
             elevation: 0,
             padding: const EdgeInsets.symmetric(vertical: 12),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(
-                color: isSecondary 
-                    ? Colors.deepPurple.withValues(alpha: 0.3) 
-                    : Colors.orange.withValues(alpha: 0.3),
+                color: borderColor,
               ),
             ),
           ),
@@ -479,18 +503,22 @@ class _MatrixScreenState extends State<MatrixScreen> {
   }
 
   Widget _buildScalarRow() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryText = isDark ? Colors.white : const Color(0xFF0F0C1B);
+    final secondaryText = isDark ? Colors.white70 : Colors.black54;
+
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.02),
+        color: isDark ? Colors.white.withValues(alpha: 0.02) : Colors.black.withValues(alpha: 0.02),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.05)),
       ),
       child: Row(
         children: [
           Text(
             'Escalar k:',
-            style: GoogleFonts.outfit(fontSize: 13, color: Colors.white70),
+            style: GoogleFonts.outfit(fontSize: 13, color: secondaryText),
           ),
           const SizedBox(width: 8),
           SizedBox(
@@ -500,13 +528,13 @@ class _MatrixScreenState extends State<MatrixScreen> {
               controller: _controllerK,
               keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
               textAlign: TextAlign.center,
-              style: GoogleFonts.outfit(fontSize: 13, color: Colors.white, fontWeight: FontWeight.bold),
+              style: GoogleFonts.outfit(fontSize: 13, color: primaryText, fontWeight: FontWeight.bold),
               decoration: InputDecoration(
                 filled: true,
-                fillColor: Colors.white.withValues(alpha: 0.04),
+                fillColor: isDark ? Colors.white.withValues(alpha: 0.04) : Colors.black.withValues(alpha: 0.04),
                 contentPadding: EdgeInsets.zero,
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+                  borderSide: BorderSide(color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.1)),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 focusedBorder: OutlineInputBorder(
@@ -535,12 +563,12 @@ class _MatrixScreenState extends State<MatrixScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.06),
+                color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.black.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
                 'Usar Calcu',
-                style: GoogleFonts.outfit(fontSize: 11, color: Colors.white70, fontWeight: FontWeight.bold),
+                style: GoogleFonts.outfit(fontSize: 11, color: secondaryText, fontWeight: FontWeight.bold),
               ),
             ),
           ),
@@ -559,18 +587,19 @@ class _MatrixScreenState extends State<MatrixScreen> {
   }
 
   Widget _buildScalarOpButton(String label, VoidCallback onTap) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return ElevatedButton(
       onPressed: onTap,
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white.withValues(alpha: 0.08),
-        foregroundColor: Colors.white,
+        backgroundColor: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
+        foregroundColor: isDark ? Colors.white : const Color(0xFF0F0C1B),
         elevation: 0,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         minimumSize: Size.zero,
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(6),
-          side: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+          side: BorderSide(color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.1)),
         ),
       ),
       child: Text(
@@ -581,6 +610,8 @@ class _MatrixScreenState extends State<MatrixScreen> {
   }
 
   Widget _buildResultPanel() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final secondaryText = isDark ? Colors.white.withValues(alpha: 0.8) : Colors.black.withValues(alpha: 0.8);
     final hasResult = widget.state.matrixResult != null || widget.state.scalarResult != null || widget.state.matrixError != null;
 
     return GlassContainer(
@@ -593,7 +624,7 @@ class _MatrixScreenState extends State<MatrixScreen> {
             style: GoogleFonts.outfit(
               fontSize: 15,
               fontWeight: FontWeight.bold,
-              color: Colors.white.withValues(alpha: 0.8),
+              color: secondaryText,
             ),
           ),
           const SizedBox(height: 16),
@@ -602,7 +633,7 @@ class _MatrixScreenState extends State<MatrixScreen> {
           // Acciones de destino si hay un resultado válido (y no es error)
           if (hasResult && widget.state.matrixError == null) ...[
             const SizedBox(height: 16),
-            const Divider(color: Colors.white10),
+            Divider(color: isDark ? Colors.white10 : Colors.black12),
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -633,6 +664,10 @@ class _MatrixScreenState extends State<MatrixScreen> {
   }
 
   Widget _buildResultContent() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryText = isDark ? Colors.white : const Color(0xFF0F0C1B);
+    final tertiaryText = isDark ? Colors.white38 : Colors.black38;
+
     if (widget.state.matrixError != null) {
       return Center(
         child: Text(
@@ -676,7 +711,7 @@ class _MatrixScreenState extends State<MatrixScreen> {
               style: GoogleFonts.outfit(
                 fontSize: rCount == 2 ? 80 : 44,
                 fontWeight: FontWeight.w200,
-                color: Colors.white.withValues(alpha: 0.3),
+                color: isDark ? Colors.white.withValues(alpha: 0.3) : Colors.black.withValues(alpha: 0.25),
               ),
             ),
             const SizedBox(width: 6),
@@ -692,16 +727,16 @@ class _MatrixScreenState extends State<MatrixScreen> {
                           height: 36,
                           margin: const EdgeInsets.all(4),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.02),
+                            color: isDark ? Colors.white.withValues(alpha: 0.02) : Colors.black.withValues(alpha: 0.02),
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+                            border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.black.withValues(alpha: 0.06)),
                           ),
                           child: Center(
                             child: Text(
                               MatrixOps.formatDouble(res[r][c]),
                               style: GoogleFonts.outfit(
                                 fontSize: 13,
-                                color: Colors.white.withValues(alpha: 0.9),
+                                color: primaryText.withValues(alpha: 0.9),
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -720,7 +755,7 @@ class _MatrixScreenState extends State<MatrixScreen> {
               style: GoogleFonts.outfit(
                 fontSize: rCount == 2 ? 80 : 44,
                 fontWeight: FontWeight.w200,
-                color: Colors.white.withValues(alpha: 0.3),
+                color: isDark ? Colors.white.withValues(alpha: 0.3) : Colors.black.withValues(alpha: 0.25),
               ),
             ),
           ],
@@ -734,7 +769,7 @@ class _MatrixScreenState extends State<MatrixScreen> {
         'Selecciona una operación de matriz para calcular el resultado.',
         style: GoogleFonts.outfit(
           fontSize: 13,
-          color: Colors.white38,
+          color: tertiaryText,
           fontWeight: FontWeight.w500,
         ),
         textAlign: TextAlign.center,
@@ -747,18 +782,27 @@ class _MatrixScreenState extends State<MatrixScreen> {
     bool isAccent = false,
     required VoidCallback onTap,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color bgColor = isAccent 
+        ? const Color(0xFF6366F1) 
+        : (isDark ? Colors.white.withValues(alpha: 0.06) : Colors.black.withValues(alpha: 0.05));
+    final Color fgColor = isAccent ? Colors.white : (isDark ? Colors.white : const Color(0xFF0F0C1B));
+    final Color borderColor = isAccent 
+        ? Colors.indigo.withValues(alpha: 0.5) 
+        : (isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.08));
+
     return Expanded(
       child: ElevatedButton(
         onPressed: onTap,
         style: ElevatedButton.styleFrom(
-          backgroundColor: isAccent ? const Color(0xFF6366F1) : Colors.white.withValues(alpha: 0.06),
-          foregroundColor: Colors.white,
+          backgroundColor: bgColor,
+          foregroundColor: fgColor,
           elevation: 0,
           padding: const EdgeInsets.symmetric(vertical: 10),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
             side: BorderSide(
-              color: isAccent ? Colors.indigo.withValues(alpha: 0.5) : Colors.white.withValues(alpha: 0.08),
+              color: borderColor,
             ),
           ),
         ),
