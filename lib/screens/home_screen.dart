@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../utils/app_config.dart';
 import '../utils/calculator_state.dart';
 import '../utils/theme_manager.dart';
 import 'scientific_screen.dart';
 import 'matrix_screen.dart';
 import 'history_screen.dart';
+import 'manual_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,11 +20,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   final CalculatorState _state = CalculatorState();
   late TabController _tabController;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  int _selectedDesktopRightPanel = 0; // 0 para Historial, 1 para Manual
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -231,6 +235,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 
   Widget _buildDesktopLayout() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final secondaryText = isDark ? Colors.white60 : Colors.black54;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -251,10 +258,96 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           ),
         ),
         const SizedBox(width: 20),
-        // Columna 3: Historial (Fijo)
+        // Columna 3: Historial / Manual (Fijo con pestaña)
         ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 320),
-          child: HistoryScreen(state: _state),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Barra de pestañas para el panel derecho
+              Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                  color: isDark ? Colors.white.withValues(alpha: 0.04) : Colors.black.withValues(alpha: 0.03),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            _selectedDesktopRightPanel = 0;
+                          });
+                        },
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          decoration: BoxDecoration(
+                            color: _selectedDesktopRightPanel == 0
+                                ? (isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05))
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Historial',
+                            style: GoogleFonts.outfit(
+                              fontWeight: _selectedDesktopRightPanel == 0 ? FontWeight.bold : FontWeight.w500,
+                              fontSize: 13,
+                              color: _selectedDesktopRightPanel == 0
+                                  ? const Color(0xFFC084FC)
+                                  : secondaryText,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            _selectedDesktopRightPanel = 1;
+                          });
+                        },
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          decoration: BoxDecoration(
+                            color: _selectedDesktopRightPanel == 1
+                                ? (isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05))
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Manual',
+                            style: GoogleFonts.outfit(
+                              fontWeight: _selectedDesktopRightPanel == 1 ? FontWeight.bold : FontWeight.w500,
+                              fontSize: 13,
+                              color: _selectedDesktopRightPanel == 1
+                                  ? const Color(0xFFC084FC)
+                                  : secondaryText,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Contenido del panel seleccionado
+              Expanded(
+                child: _selectedDesktopRightPanel == 0
+                    ? HistoryScreen(state: _state)
+                    : const ManualScreen(),
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -289,6 +382,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               Tab(text: 'Científica'),
               Tab(text: 'Matrices 2x2'),
               Tab(text: 'Historial'),
+              Tab(text: 'Manual'),
             ],
           ),
         ),
@@ -310,6 +404,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   }
                 },
               ),
+              const ManualScreen(),
             ],
           ),
         ),
@@ -407,6 +502,70 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   onTap: () => themeManager.setThemeMode(ThemeMode.system),
                 ),
                 
+                const SizedBox(height: 16),
+                Divider(height: 1, color: isDark ? Colors.white10 : Colors.black12),
+                const SizedBox(height: 16),
+                
+                // Título de la sección de preferencias
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                  child: Text(
+                    'PREFERENCIAS',
+                    style: GoogleFonts.outfit(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.white30 : Colors.black38,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                ),
+                
+                ListenableBuilder(
+                  listenable: _state,
+                  builder: (context, _) {
+                    return _buildSwitchOption(
+                      context: context,
+                      title: 'Sonido al presionar teclas',
+                      icon: Icons.volume_up_outlined,
+                      value: AppConfig.clickSoundEnabled,
+                      onChanged: (val) {
+                        _state.toggleClickSound();
+                      },
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 16),
+                Divider(height: 1, color: isDark ? Colors.white10 : Colors.black12),
+                const SizedBox(height: 16),
+                
+                // Título de la sección legal
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                  child: Text(
+                    'LEGAL Y POLÍTICAS',
+                    style: GoogleFonts.outfit(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.white30 : Colors.black38,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                ),
+                
+                _buildDrawerLinkOption(
+                  context: context,
+                  title: 'Política de Privacidad',
+                  icon: Icons.privacy_tip_outlined,
+                  url: AppConfig.privacyPolicyUrl,
+                ),
+                _buildDrawerLinkOption(
+                  context: context,
+                  title: 'Términos y Condiciones',
+                  icon: Icons.description_outlined,
+                  url: AppConfig.termsAndConditionsUrl,
+                ),
+                
                 const Spacer(),
                 // Información de la versión
                 Padding(
@@ -492,6 +651,120 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDrawerLinkOption({
+    required BuildContext context,
+    required String title,
+    required IconData icon,
+    required String url,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+      child: InkWell(
+        onTap: () async {
+          final uri = Uri.parse(url);
+          try {
+            final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+            if (!launched && context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('No se pudo abrir el enlace: $url')),
+              );
+            }
+          } catch (e) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Error al abrir el enlace: $url')),
+              );
+            }
+          }
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                color: isDark ? Colors.white70 : Colors.black54,
+                size: 20,
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  title,
+                  style: GoogleFonts.outfit(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: isDark ? Colors.white : Colors.black87,
+                  ),
+                ),
+              ),
+              Icon(
+                Icons.open_in_new,
+                color: isDark ? Colors.white30 : Colors.black26,
+                size: 16,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSwitchOption({
+    required BuildContext context,
+    required String title,
+    required IconData icon,
+    required bool value,
+    required ValueChanged<bool> onChanged,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              color: isDark ? Colors.white70 : Colors.black54,
+              size: 20,
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                title,
+                style: GoogleFonts.outfit(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
+              ),
+            ),
+            Switch(
+              value: value,
+              onChanged: onChanged,
+              activeThumbColor: const Color(0xFFC084FC),
+              activeTrackColor: const Color(0xFF6366F1).withValues(alpha: 0.3),
+              inactiveThumbColor: isDark ? Colors.white38 : Colors.black38,
+              inactiveTrackColor: isDark ? Colors.white10 : Colors.black12,
+            ),
+          ],
         ),
       ),
     );

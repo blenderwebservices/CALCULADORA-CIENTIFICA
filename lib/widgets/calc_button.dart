@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../utils/app_config.dart';
 
 enum ButtonType {
   number,
@@ -161,6 +163,9 @@ class _CalcButtonState extends State<CalcButton> with SingleTickerProviderStateM
     Widget buttonBody = InkWell(
       onTap: () {
         _controller.reverse();
+        if (AppConfig.clickSoundEnabled) {
+          SystemSound.play(SystemSoundType.click);
+        }
         widget.onTap();
       },
       onTapDown: (_) => _controller.forward(),

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/history_item.dart';
+import 'app_config.dart';
 import 'math_parser.dart';
 import 'matrix_ops.dart';
 
@@ -48,6 +49,7 @@ class CalculatorState extends ChangeNotifier {
 
   CalculatorState() {
     _loadHistoryFromPrefs();
+    loadSoundPreference();
   }
 
   // ==========================================
@@ -749,6 +751,31 @@ class CalculatorState extends ChangeNotifier {
         scalarK = item.numericResult!;
         notifyListeners();
       }
+    }
+  }
+
+  // ==========================================
+  // 7. PREFERENCIAS DE SONIDO
+  // ==========================================
+
+  Future<void> loadSoundPreference() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      AppConfig.clickSoundEnabled = prefs.getBool('sci_mat_calc_sound') ?? true;
+      notifyListeners();
+    } catch (e) {
+      // Ignorar
+    }
+  }
+
+  void toggleClickSound() async {
+    AppConfig.clickSoundEnabled = !AppConfig.clickSoundEnabled;
+    notifyListeners();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('sci_mat_calc_sound', AppConfig.clickSoundEnabled);
+    } catch (e) {
+      // Ignorar
     }
   }
 }
