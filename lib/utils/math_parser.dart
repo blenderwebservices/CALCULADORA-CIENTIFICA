@@ -7,6 +7,7 @@ enum TokenType {
   unaryMinus,
   function,
   constant,
+  variable,
   leftParen,
   rightParen,
 }
@@ -72,6 +73,13 @@ class MathParser {
         }
       }
 
+      // Variable x o X para funciones
+      if (char == 'x' || char == 'X') {
+        tokens.add(Token(type: TokenType.variable, value: 'x', raw: char));
+        i++;
+        continue;
+      }
+
       // Paréntesis
       if (char == '(') {
         tokens.add(Token(type: TokenType.leftParen, value: '(', raw: '('));
@@ -108,7 +116,7 @@ class MathParser {
 
       // Funciones científicas
       var matchedFunc = false;
-      final funcs = ['asin', 'acos', 'atan', 'sin', 'cos', 'tan', 'ln', 'log', 'sqrt'];
+      final funcs = ['asin', 'acos', 'atan', 'sin', 'cos', 'tan', 'ln', 'log', 'sqrt', 'abs'];
       for (final f in funcs) {
         if (str.startsWith(f, i)) {
           tokens.add(Token(type: TokenType.function, value: f, raw: f));
@@ -127,7 +135,7 @@ class MathParser {
   }
 
   /// Inserta operadores de multiplicación implícitos.
-  /// Ej. 2pi -> 2 * pi, 2(3+4) -> 2 * (3+4)
+  /// Ej. 2pi -> 2 * pi, 2(3+4) -> 2 * (3+4), 2x -> 2 * x, x^2
   static List<Token> insertImplicitMultiplication(List<Token> tokens) {
     final List<Token> result = [];
     for (int i = 0; i < tokens.length; i++) {
@@ -138,11 +146,13 @@ class MathParser {
 
         final isCurrTerm = curr.type == TokenType.number ||
             curr.type == TokenType.constant ||
+            curr.type == TokenType.variable ||
             curr.type == TokenType.rightParen ||
             (curr.type == TokenType.operator && curr.value == '!');
 
         final isNextTerm = next.type == TokenType.number ||
             next.type == TokenType.constant ||
+            next.type == TokenType.variable ||
             next.type == TokenType.function ||
             next.type == TokenType.leftParen;
 
@@ -184,7 +194,9 @@ class MathParser {
     final List<Token> operatorStack = [];
 
     for (final token in tokens) {
-      if (token.type == TokenType.number || token.type == TokenType.constant) {
+      if (token.type == TokenType.number ||
+          token.type == TokenType.constant ||
+          token.type == TokenType.variable) {
         outputQueue.add(token);
       } else if (token.type == TokenType.function) {
         operatorStack.add(token);
@@ -195,7 +207,7 @@ class MathParser {
           token.type == TokenType.unaryMinus ||
           token.type == TokenType.unaryPlus) {
         
-        final key1 = token.type == TokenType.operator ? token.value as String : token.value as String;
+        final key1 = token.value as String;
         
         while (operatorStack.isNotEmpty) {
           final top = operatorStack.last;
@@ -208,7 +220,7 @@ class MathParser {
             if (top.type == TokenType.function) {
               shouldPop = true;
             } else {
-              final key2 = top.type == TokenType.operator ? top.value as String : top.value as String;
+              final key2 = top.value as String;
               final p1 = _opProps[key1]!.precedence;
               final p2 = _opProps[key2]!.precedence;
               final assoc1 = _opProps[key1]!.isLeftAssociative;
@@ -261,109 +273,167 @@ class MathParser {
     return outputQueue;
   }
 
+  /// Convierte una expresión en notación posfija (RPN) para rápida evaluación posterior.
+  static List<Token> parseToPostfix(String expression) {
+    final tokens = tokenize(expression);
+    final implicit = insertImplicitMultiplication(tokens);
+    final parsed = identifyUnaryOperators(implicit);
+    return infixToPostfix(parsed);
+  }
+
   /// Evalúa una lista en notación posfija (RPN) y devuelve el valor.
-  static double evaluatePostfix(List<Token> postfix, String angleMode) {
+  static double evaluatePostfix(
+    List<Token> postfix,
+    String angleMode, {
+    double? xValue,
+    bool quietMode = false,
+  }) {
     final List<double> stack = [];
 
-    for (final token in postfix) {
-      if (token.type == TokenType.number) {
-        stack.add(token.value as double);
-      } else if (token.type == TokenType.constant) {
-        if (token.value == 'pi') {
-          stack.add(math.pi);
-        } else if (token.value == 'e') {
-          stack.add(math.e);
-        }
-      } else if (token.type == TokenType.unaryMinus) {
-        if (stack.isEmpty) throw FormatException('Sintaxis inválida');
-        final val = stack.removeLast();
-        stack.add(-val);
-      } else if (token.type == TokenType.unaryPlus) {
-        if (stack.isEmpty) throw FormatException('Sintaxis inválida');
-        // No hace nada
-      } else if (token.type == TokenType.operator) {
-        if (token.value == '!') {
+    try {
+      for (final token in postfix) {
+        if (token.type == TokenType.number) {
+          stack.add(token.value as double);
+        } else if (token.type == TokenType.variable) {
+          stack.add(xValue ?? 0.0);
+        } else if (token.type == TokenType.constant) {
+          if (token.value == 'pi') {
+            stack.add(math.pi);
+          } else if (token.value == 'e') {
+            stack.add(math.e);
+          }
+        } else if (token.type == TokenType.unaryMinus) {
           if (stack.isEmpty) throw FormatException('Sintaxis inválida');
           final val = stack.removeLast();
-          stack.add(mathFactorial(val));
-        } else {
-          if (stack.length < 2) throw FormatException('Sintaxis inválida');
-          final b = stack.removeLast();
-          final a = stack.removeLast();
+          stack.add(-val);
+        } else if (token.type == TokenType.unaryPlus) {
+          if (stack.isEmpty) throw FormatException('Sintaxis inválida');
+          // No hace nada
+        } else if (token.type == TokenType.operator) {
+          if (token.value == '!') {
+            if (stack.isEmpty) throw FormatException('Sintaxis inválida');
+            final val = stack.removeLast();
+            stack.add(mathFactorial(val));
+          } else {
+            if (stack.length < 2) throw FormatException('Sintaxis inválida');
+            final b = stack.removeLast();
+            final a = stack.removeLast();
+
+            switch (token.value) {
+              case '+': stack.add(a + b); break;
+              case '-': stack.add(a - b); break;
+              case '*': stack.add(a * b); break;
+              case '/':
+                if (b == 0) {
+                  if (quietMode) return double.nan;
+                  throw FormatException('División / 0');
+                }
+                stack.add(a / b);
+                break;
+              case '^':
+                final res = math.pow(a, b).toDouble();
+                if (res.isNaN || res.isInfinite) {
+                  if (quietMode) return double.nan;
+                }
+                stack.add(res);
+                break;
+              case '%':
+                if (b == 0) {
+                  if (quietMode) return double.nan;
+                  throw FormatException('División / 0');
+                }
+                stack.add(a % b);
+                break;
+              default: throw FormatException('Operador inválido');
+            }
+          }
+        } else if (token.type == TokenType.function) {
+          if (stack.isEmpty) throw FormatException('Sintaxis inválida');
+          final val = stack.removeLast();
 
           switch (token.value) {
-            case '+': stack.add(a + b); break;
-            case '-': stack.add(a - b); break;
-            case '*': stack.add(a * b); break;
-            case '/':
-              if (b == 0) throw FormatException('División / 0');
-              stack.add(a / b);
+            case 'abs':
+              stack.add(val.abs());
               break;
-            case '^': stack.add(math.pow(a, b).toDouble()); break;
-            case '%': stack.add(a % b); break;
-            default: throw FormatException('Operador inválido');
+            case 'sin':
+              final angle = angleMode == 'DEG' ? degToRad(val) : val;
+              stack.add(math.sin(angle));
+              break;
+            case 'cos':
+              final angle = angleMode == 'DEG' ? degToRad(val) : val;
+              final res = math.cos(angle);
+              stack.add(res.abs() < 1e-14 ? 0 : res);
+              break;
+            case 'tan':
+              if (angleMode == 'DEG' && (val % 180).abs() == 90) {
+                if (quietMode) return double.nan;
+                throw FormatException('Tan indefinida');
+              }
+              final angle = angleMode == 'DEG' ? degToRad(val) : val;
+              final res = math.tan(angle);
+              if (res.abs() > 1e14) {
+                if (quietMode) return double.nan;
+                throw FormatException('Tan indefinida');
+              }
+              stack.add(res.abs() < 1e-14 ? 0 : res);
+              break;
+            case 'asin':
+              if (val < -1 || val > 1) {
+                if (quietMode) return double.nan;
+                throw FormatException('Dom Err [-1, 1]');
+              }
+              final res = math.asin(val);
+              stack.add(angleMode == 'DEG' ? radToDeg(res) : res);
+              break;
+            case 'acos':
+              if (val < -1 || val > 1) {
+                if (quietMode) return double.nan;
+                throw FormatException('Dom Err [-1, 1]');
+              }
+              final res = math.acos(val);
+              stack.add(angleMode == 'DEG' ? radToDeg(res) : res);
+              break;
+            case 'atan':
+              final res = math.atan(val);
+              stack.add(angleMode == 'DEG' ? radToDeg(res) : res);
+              break;
+            case 'ln':
+              if (val <= 0) {
+                if (quietMode) return double.nan;
+                throw FormatException('Dom Err (>0)');
+              }
+              stack.add(math.log(val));
+              break;
+            case 'log':
+              if (val <= 0) {
+                if (quietMode) return double.nan;
+                throw FormatException('Dom Err (>0)');
+              }
+              stack.add(math.log(val) / math.ln10);
+              break;
+            case 'sqrt':
+              if (val < 0) {
+                if (quietMode) return double.nan;
+                throw FormatException('Dom Err (>=0)');
+              }
+              stack.add(math.sqrt(val));
+              break;
+            default:
+              throw FormatException('Función inválida');
           }
         }
-      } else if (token.type == TokenType.function) {
-        if (stack.isEmpty) throw FormatException('Sintaxis inválida');
-        final val = stack.removeLast();
-
-        switch (token.value) {
-          case 'sin':
-            final angle = angleMode == 'DEG' ? degToRad(val) : val;
-            stack.add(math.sin(angle));
-            break;
-          case 'cos':
-            final angle = angleMode == 'DEG' ? degToRad(val) : val;
-            final res = math.cos(angle);
-            stack.add(res.abs() < 1e-14 ? 0 : res);
-            break;
-          case 'tan':
-            if (angleMode == 'DEG' && (val % 180).abs() == 90) {
-              throw FormatException('Tan indefinida');
-            }
-            final angle = angleMode == 'DEG' ? degToRad(val) : val;
-            final res = math.tan(angle);
-            if (res.abs() > 1e14) throw FormatException('Tan indefinida');
-            stack.add(res.abs() < 1e-14 ? 0 : res);
-            break;
-          case 'asin':
-            if (val < -1 || val > 1) throw FormatException('Dom Err [-1, 1]');
-            final res = math.asin(val);
-            stack.add(angleMode == 'DEG' ? radToDeg(res) : res);
-            break;
-          case 'acos':
-            if (val < -1 || val > 1) throw FormatException('Dom Err [-1, 1]');
-            final res = math.acos(val);
-            stack.add(angleMode == 'DEG' ? radToDeg(res) : res);
-            break;
-          case 'atan':
-            final res = math.atan(val);
-            stack.add(angleMode == 'DEG' ? radToDeg(res) : res);
-            break;
-          case 'ln':
-            if (val <= 0) throw FormatException('Dom Err (>0)');
-            stack.add(math.log(val));
-            break;
-          case 'log':
-            if (val <= 0) throw FormatException('Dom Err (>0)');
-            stack.add(math.log(val) / math.ln10);
-            break;
-          case 'sqrt':
-            if (val < 0) throw FormatException('Dom Err (>=0)');
-            stack.add(math.sqrt(val));
-            break;
-          default:
-            throw FormatException('Función inválida');
-        }
       }
-    }
 
-    if (stack.length != 1) {
-      throw FormatException('Sintaxis inválida');
-    }
+      if (stack.length != 1) {
+        if (quietMode) return double.nan;
+        throw FormatException('Sintaxis inválida');
+      }
 
-    return stack.first;
+      return stack.first;
+    } catch (_) {
+      if (quietMode) return double.nan;
+      rethrow;
+    }
   }
 
   static double degToRad(double deg) => deg * math.pi / 180;
@@ -382,11 +452,8 @@ class MathParser {
   }
 
   /// Evalúa una expresión directamente desde una cadena de texto.
-  static double eval(String expression, String angleMode) {
-    final tokens = tokenize(expression);
-    final implicit = insertImplicitMultiplication(tokens);
-    final parsed = identifyUnaryOperators(implicit);
-    final postfix = infixToPostfix(parsed);
-    return evaluatePostfix(postfix, angleMode);
+  static double eval(String expression, String angleMode, {double? xValue}) {
+    final postfix = parseToPostfix(expression);
+    return evaluatePostfix(postfix, angleMode, xValue: xValue);
   }
 }

@@ -105,14 +105,68 @@ Todas las funciones requieren el uso de paréntesis para encerrar su argumento (
 
 ---
 
-## 7. Modo Matrices
+## 7. Modo Matrices (Hasta 4x4 Eje por Eje)
 
-En la pestaña **Matrices**, puedes realizar operaciones avanzadas con dos matrices principales, denominadas **Matriz A** y **Matriz B** (con tamaños configurables de 1x1 a 2x2):
+En la pestaña **Matrices**, puedes realizar operaciones de álgebra lineal con dos matrices configurables, **Matriz A** y **Matriz B**, con dimensiones independientes seleccionables eje por eje de **1 a 4 filas** y de **1 a 4 columnas**:
 
-* **Suma (`A + B`) / Resta (`A - B`):** Suma o resta elemento por elemento. Las dimensiones de A y B deben ser exactamente iguales (ej. ambas 2x2).
-* **Multiplicación (`A × B`):** Realiza la multiplicación matricial. El número de columnas de la Matriz A debe ser igual al número de filas de la Matriz B.
-* **Determinante (`det(A)` / `det(B)`):** Calcula el determinante de la matriz. Solo está disponible para matrices cuadradas (1x1 o 2x2).
-* **Inversa (`Inv(A)` / `Inv(B)`):** Calcula la matriz inversa. La matriz debe ser cuadrada y su determinante no debe ser cero (matriz no singular).
-* **Transpuesta (`Trans(A)` / `Trans(B)`):** Intercambia las filas por columnas.
-* **Multiplicación Escalar (`k * A` / `k * B`):** Multiplica cada elemento de la matriz seleccionada por un valor constante $k$ ingresado en el campo correspondiente.
-* **Intercambiar (`A <-> B`):** Intercambia los valores y dimensiones cargados en la Matriz A con los de la Matriz B.
+* **Selección Dimensional:** Mediante los selectores desplegables `F` (Filas) y `C` (Columnas) puedes configurar dimensiones rectangulares o cuadradas (ej. $1\times 1, 2\times 3, 3\times 4, 4\times 4$). La interfaz y los corchetes adaptan su escala y preservan los valores previamente introducidos.
+* **Suma (`A + B`) y Resta (`A - B`):** Realiza la suma o resta elemento a elemento. Requiere que las dimensiones de A y B sean idénticas.
+* **Multiplicación Matricial (`A × B`):** Multiplica matrices de acuerdo a las reglas del álgebra lineal. El número de columnas de A debe coincidir con el número de filas de B (ej. $A_{3\times 4} \times B_{4\times 2} = C_{3\times 2}$).
+* **Determinante (`det(A)` / `det(B)`):** Calcula el determinante exacto mediante expansión por cofactores para cualquier matriz cuadrada de orden 1, 2, 3 o 4 ($1\times 1, 2\times 2, 3\times 3, 4\times 4$).
+* **Inversa (`Inv(A)` / `Inv(B)`):** Calcula la matriz inversa mediante el método de eliminación Gauss-Jordan con pivoteo parcial. Requiere que la matriz sea cuadrada y no singular ($\det \ne 0$).
+* **Transpuesta (`Trans(A)` / `Trans(B)`):** Intercambia las filas por columnas ($M_{m\times n} \rightarrow M^T_{n\times m}$).
+* **Multiplicación Escalar (`k · A` / `k · B`):** Multiplica cada elemento por una constante $k$. Permite importar el resultado activo de la calculadora científica con el botón *"Usar Calcu"*.
+* **Intercambiar (`A ↔ B`):** Intercambia las dimensiones y celdas de la Matriz A con las de la Matriz B.
+
+---
+
+## 8. Calculadora de Negocios y Finanzas
+
+La pestaña **Negocios** integra 6 módulos de cálculo comercial y financiero:
+
+### 8.1. Préstamos y Amortización
+Calcula la cuota mensual periódica fija (sistema de amortización francés), monto total devuelto e intereses totales acumulados:
+$$M = P \cdot \frac{i(1+i)^n}{(1+i)^n - 1}$$
+* $P$: Monto del préstamo.
+* $i$: Tasa de interés mensual ($r / 12 / 100$).
+* $n$: Número de mensualidades.
+
+### 8.2. Interés Compuesto y Simple
+Permite proyectar el crecimiento de un capital inicial con aportes mensuales periódicos:
+* **Interés Compuesto:** $A = P\left(1 + \frac{r}{n}\right)^{nt} + \text{PMT} \cdot \frac{(1 + r/12)^{12t} - 1}{r/12}$
+* **Interés Simple:** $I = P \cdot r \cdot t$
+
+### 8.3. Punto de Equilibrio (Break-Even)
+Determina el volumen mínimo de ventas para absorber los costos fijos sin generar pérdidas ni ganancias:
+$$\text{Unidades} = \frac{\text{Costos Fijos}}{\text{Precio de Venta Unitario} - \text{Costo Variable Unitario}}$$
+
+### 8.4. Margen de Ganancia y Markup
+Calcula la relación entre el costo del producto y su precio de venta:
+* **Margen Bruto (%):** $\frac{\text{Precio Venta} - \text{Costo}}{\text{Precio Venta}} \times 100$
+* **Markup sobre Costo (%):** $\frac{\text{Precio Venta} - \text{Costo}}{\text{Costo}} \times 100$
+
+### 8.5. Retorno de Inversión (ROI)
+Mide el porcentaje de rendimiento neto generado sobre una inversión inicial:
+$$\text{ROI (\%)} = \frac{\text{Ingreso Obtenido} - \text{Inversión}}{\text{Inversión}} \times 100$$
+
+### 8.6. Impuestos / IVA
+* **Agregar IVA (Neto $\rightarrow$ Bruto):** $\text{Total} = \text{Base} \times (1 + \text{IVA}\%)$.
+* **Desglosar IVA (Bruto $\rightarrow$ Neto):** $\text{Subtotal} = \frac{\text{Total}}{1 + \text{IVA}\%}$, con $\text{IVA} = \text{Total} - \text{Subtotal}$.
+* Incluye botones de acceso rápido para tasas estándar (16%, 21%, 10%, 8%, 0%).
+
+---
+
+## 9. Graficador de Funciones 2D
+
+La pestaña **Gráficas** proporciona un entorno interactivo en tiempo real para visualizar y estudiar funciones matemáticas:
+
+* **Sintaxis de Entrada:** Introduce funciones en términos de la variable $x$ (o $X$). Soporta multiplicación implícita (ej. `2x`, `x(x+1)`, `x^2`, `x sin(x)`).
+* **Presets Rápidos:** Botones de un toque para funciones elementales: $\sin(x)$, $\cos(x)$, $\tan(x)$, $x^2 - 4$, $x^3 - 3x$, $1/x$, $\sqrt{x}$, $e^x$, $\ln(x)$, $\text{abs}(x)$.
+* **Controles Gestuales:**
+  * **Arrastre / Pan:** Mueve el lienzo cartesiano en cualquier dirección.
+  * **Zoom (+ / -):** Escala el plano para estudiar comportamiento asíntotico o local.
+  * **Centrar (0,0):** Restablece la vista al origen cartesiano estándar.
+* **Inspección de Puntos:** Al pulsar o arrastrar el dedo sobre la gráfica, se proyecta un cursor con línea guía y una insignia con las coordenadas exactas $(x, y)$.
+* **Conmutador Angular:** Alterna entre grados sexagesimales (**DEG**) y radianes (**RAD**) para funciones trigonométricas.
+* **Tabla de Valores:** Muestra una tabla comparativa de valores $x \rightarrow f(x)$ para un análisis puntual rápido.
+

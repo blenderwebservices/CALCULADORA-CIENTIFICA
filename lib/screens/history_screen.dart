@@ -122,21 +122,39 @@ class HistoryScreen extends StatelessWidget {
       itemBuilder: (context, index) {
         final item = items[index];
         final isSci = item.type == 'sci';
+        final isMatrix = item.type == 'matrix';
+        final isBusiness = item.type == 'business';
+        final isGraph = item.type == 'graph';
         final isDark = Theme.of(context).brightness == Brightness.dark;
         final primaryText = isDark ? Colors.white : const Color(0xFF0F0C1B);
         final secondaryText = isDark ? Colors.white60 : Colors.black54;
         final tertiaryText = isDark ? Colors.white24 : Colors.black26;
 
+        String badgeText = 'CIENTÍFICA';
+        Color badgeColor = Colors.deepPurple;
+        if (isMatrix) {
+          badgeText = 'MATRICES';
+          badgeColor = Colors.orange;
+        } else if (isBusiness) {
+          badgeText = 'NEGOCIOS';
+          badgeColor = const Color(0xFF10B981);
+        } else if (isGraph) {
+          badgeText = 'GRÁFICAS';
+          badgeColor = const Color(0xFF0284C7);
+        }
+
         return Container(
           margin: const EdgeInsets.only(bottom: 8),
           child: InkWell(
             onTap: () {
-              // Cargar item en estado
-              state.loadHistoryItem(item);
+              // Cargar item en estado si es compatible
+              if (isSci || isMatrix) {
+                state.loadHistoryItem(item);
+              }
 
               // Si se solicita, cambiar pestaña
               if (onTabChangeRequested != null) {
-                onTabChangeRequested!(isSci ? 'scientific' : 'matrix');
+                onTabChangeRequested!(item.type);
               }
             },
             borderRadius: BorderRadius.circular(14),
@@ -153,24 +171,18 @@ class HistoryScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: isSci 
-                              ? Colors.deepPurple.withValues(alpha: isDark ? 0.2 : 0.08) 
-                              : Colors.orange.withValues(alpha: isDark ? 0.2 : 0.08),
+                          color: badgeColor.withValues(alpha: isDark ? 0.2 : 0.08),
                           borderRadius: BorderRadius.circular(6),
                           border: Border.all(
-                            color: isSci 
-                                ? Colors.deepPurple.withValues(alpha: isDark ? 0.3 : 0.15) 
-                                : Colors.orange.withValues(alpha: isDark ? 0.3 : 0.15),
+                            color: badgeColor.withValues(alpha: isDark ? 0.3 : 0.15),
                           ),
                         ),
                         child: Text(
-                          isSci ? 'CIENTÍFICA' : 'MATRICES',
+                          badgeText,
                           style: GoogleFonts.outfit(
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
-                            color: isSci 
-                                ? (isDark ? const Color(0xFFC084FC) : Colors.deepPurple) 
-                                : (isDark ? const Color(0xFFFB923C) : Colors.orange.shade800),
+                            color: isDark ? badgeColor.withValues(alpha: 0.9) : badgeColor,
                             letterSpacing: 0.5,
                           ),
                         ),

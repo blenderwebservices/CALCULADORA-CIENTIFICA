@@ -30,7 +30,7 @@ class CalcButton extends StatefulWidget {
   });
 
   @override
-  _CalcButtonState createState() => _CalcButtonState();
+  State<CalcButton> createState() => _CalcButtonState();
 }
 
 class _CalcButtonState extends State<CalcButton> with SingleTickerProviderStateMixin {

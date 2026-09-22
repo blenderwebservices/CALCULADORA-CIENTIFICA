@@ -10,7 +10,7 @@ class MatrixScreen extends StatefulWidget {
   const MatrixScreen({super.key, required this.state});
 
   @override
-  _MatrixScreenState createState() => _MatrixScreenState();
+  State<MatrixScreen> createState() => _MatrixScreenState();
 }
 
 class _MatrixScreenState extends State<MatrixScreen> {
@@ -21,18 +21,18 @@ class _MatrixScreenState extends State<MatrixScreen> {
   @override
   void initState() {
     super.initState();
-    // Inicializar controladores
+    // Inicializar controladores hasta 4x4
     _controllersA = List.generate(
-      2,
+      4,
       (r) => List.generate(
-        2,
+        4,
         (c) => TextEditingController(text: _formatValue(widget.state.matrixA[r][c])),
       ),
     );
     _controllersB = List.generate(
-      2,
+      4,
       (r) => List.generate(
-        2,
+        4,
         (c) => TextEditingController(text: _formatValue(widget.state.matrixB[r][c])),
       ),
     );
@@ -73,9 +73,9 @@ class _MatrixScreenState extends State<MatrixScreen> {
   }
 
   void _syncControllers() {
-    // Sincronizar Matrix A
-    for (int r = 0; r < 2; r++) {
-      for (int c = 0; c < 2; c++) {
+    // Sincronizar Matrix A (hasta 4x4)
+    for (int r = 0; r < 4; r++) {
+      for (int c = 0; c < 4; c++) {
         final val = widget.state.matrixA[r][c];
         final ctrl = _controllersA[r][c];
         final double? ctrlVal = double.tryParse(ctrl.text);
@@ -84,9 +84,9 @@ class _MatrixScreenState extends State<MatrixScreen> {
         }
       }
     }
-    // Sincronizar Matrix B
-    for (int r = 0; r < 2; r++) {
-      for (int c = 0; c < 2; c++) {
+    // Sincronizar Matrix B (hasta 4x4)
+    for (int r = 0; r < 4; r++) {
+      for (int c = 0; c < 4; c++) {
         final val = widget.state.matrixB[r][c];
         final ctrl = _controllersB[r][c];
         final double? ctrlVal = double.tryParse(ctrl.text);
@@ -291,25 +291,25 @@ class _MatrixScreenState extends State<MatrixScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          // Cuadrícula de Inputs
+          // Cuadrícula de Inputs adaptativa
           FittedBox(
             fit: BoxFit.scaleDown,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Corchete Izquierdo
+                // Corchete Izquierdo adaptativo
                 Text(
                   '[',
                   style: GoogleFonts.outfit(
-                    fontSize: rows == 2 ? 80 : 44,
+                    fontSize: rows == 1 ? 44 : (rows == 2 ? 80 : (rows == 3 ? 116 : 152)),
                     fontWeight: FontWeight.w200,
                     color: isDark ? Colors.white.withValues(alpha: 0.3) : Colors.black.withValues(alpha: 0.25),
                   ),
                 ),
-                const SizedBox(width: 6),
-                // Celdas
+                const SizedBox(width: 4),
+                // Celdas dinámicas
                 SizedBox(
-                  width: 140,
+                  width: cols * 52.0,
                   child: Column(
                     children: List.generate(rows, (r) {
                       return Row(
@@ -318,7 +318,7 @@ class _MatrixScreenState extends State<MatrixScreen> {
                           return Expanded(
                             child: Container(
                               height: 36,
-                              margin: const EdgeInsets.all(4),
+                              margin: const EdgeInsets.all(3),
                               child: TextField(
                                 controller: ctrl,
                                 keyboardType: const TextInputType.numberWithOptions(
@@ -327,7 +327,7 @@ class _MatrixScreenState extends State<MatrixScreen> {
                                 ),
                                 textAlign: TextAlign.center,
                                 style: GoogleFonts.outfit(
-                                  fontSize: 14,
+                                  fontSize: cols > 3 ? 12 : 14,
                                   color: primaryText,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -336,7 +336,7 @@ class _MatrixScreenState extends State<MatrixScreen> {
                                   fillColor: isDark ? Colors.white.withValues(alpha: 0.03) : Colors.black.withValues(alpha: 0.03),
                                   contentPadding: EdgeInsets.zero,
                                   hintText: '0',
-                                  hintStyle: GoogleFonts.outfit(color: tertiaryText),
+                                  hintStyle: GoogleFonts.outfit(color: tertiaryText, fontSize: cols > 3 ? 11 : 13),
                                   enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.08)),
                                     borderRadius: BorderRadius.circular(8),
@@ -362,12 +362,12 @@ class _MatrixScreenState extends State<MatrixScreen> {
                     }),
                   ),
                 ),
-                const SizedBox(width: 6),
-                // Corchete Derecho
+                const SizedBox(width: 4),
+                // Corchete Derecho adaptativo
                 Text(
                   ']',
                   style: GoogleFonts.outfit(
-                    fontSize: rows == 2 ? 80 : 44,
+                    fontSize: rows == 1 ? 44 : (rows == 2 ? 80 : (rows == 3 ? 116 : 152)),
                     fontWeight: FontWeight.w200,
                     color: isDark ? Colors.white.withValues(alpha: 0.3) : Colors.black.withValues(alpha: 0.25),
                   ),
@@ -402,6 +402,8 @@ class _MatrixScreenState extends State<MatrixScreen> {
           items: const [
             DropdownMenuItem(value: 1, child: Text('1')),
             DropdownMenuItem(value: 2, child: Text('2')),
+            DropdownMenuItem(value: 3, child: Text('3')),
+            DropdownMenuItem(value: 4, child: Text('4')),
           ],
           onChanged: onChanged,
         ),
@@ -705,19 +707,19 @@ class _MatrixScreenState extends State<MatrixScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Corchete Izquierdo
+            // Corchete Izquierdo adaptativo
             Text(
               '[',
               style: GoogleFonts.outfit(
-                fontSize: rCount == 2 ? 80 : 44,
+                fontSize: rCount == 1 ? 44 : (rCount == 2 ? 80 : (rCount == 3 ? 116 : 152)),
                 fontWeight: FontWeight.w200,
                 color: isDark ? Colors.white.withValues(alpha: 0.3) : Colors.black.withValues(alpha: 0.25),
               ),
             ),
-            const SizedBox(width: 6),
-            // Rejilla de Celdas
+            const SizedBox(width: 4),
+            // Rejilla de Celdas adaptativa
             SizedBox(
-              width: 140,
+              width: cCount * 62.0,
               child: Column(
                 children: List.generate(rCount, (r) {
                   return Row(
@@ -725,19 +727,25 @@ class _MatrixScreenState extends State<MatrixScreen> {
                       return Expanded(
                         child: Container(
                           height: 36,
-                          margin: const EdgeInsets.all(4),
+                          margin: const EdgeInsets.all(3),
                           decoration: BoxDecoration(
                             color: isDark ? Colors.white.withValues(alpha: 0.02) : Colors.black.withValues(alpha: 0.02),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.black.withValues(alpha: 0.06)),
                           ),
                           child: Center(
-                            child: Text(
-                              MatrixOps.formatDouble(res[r][c]),
-                              style: GoogleFonts.outfit(
-                                fontSize: 13,
-                                color: primaryText.withValues(alpha: 0.9),
-                                fontWeight: FontWeight.bold,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  MatrixOps.formatDouble(res[r][c]),
+                                  style: GoogleFonts.outfit(
+                                    fontSize: cCount > 3 ? 11 : 13,
+                                    color: primaryText.withValues(alpha: 0.9),
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
@@ -748,12 +756,12 @@ class _MatrixScreenState extends State<MatrixScreen> {
                 }),
               ),
             ),
-            const SizedBox(width: 6),
-            // Corchete Derecho
+            const SizedBox(width: 4),
+            // Corchete Derecho adaptativo
             Text(
               ']',
               style: GoogleFonts.outfit(
-                fontSize: rCount == 2 ? 80 : 44,
+                fontSize: rCount == 1 ? 44 : (rCount == 2 ? 80 : (rCount == 3 ? 116 : 152)),
                 fontWeight: FontWeight.w200,
                 color: isDark ? Colors.white.withValues(alpha: 0.3) : Colors.black.withValues(alpha: 0.25),
               ),

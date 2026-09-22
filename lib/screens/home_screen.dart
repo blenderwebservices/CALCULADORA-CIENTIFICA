@@ -6,6 +6,8 @@ import '../utils/calculator_state.dart';
 import '../utils/theme_manager.dart';
 import 'scientific_screen.dart';
 import 'matrix_screen.dart';
+import 'business_screen.dart';
+import 'graph_screen.dart';
 import 'history_screen.dart';
 import 'manual_screen.dart';
 
@@ -13,7 +15,7 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
@@ -21,11 +23,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   late TabController _tabController;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _selectedDesktopRightPanel = 0; // 0 para Historial, 1 para Manual
+  int _selectedDesktopTool = 0; // 0: Científica, 1: Matrices, 2: Negocios, 3: Gráficas
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 6, vsync: this);
   }
 
   @override
@@ -195,24 +198,35 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 ),
               ),
             ),
-            Text(
-              'Calculadora ',
-              style: GoogleFonts.outfit(
-                fontSize: 24,
-                fontWeight: FontWeight.w400,
-                color: primaryText,
-              ),
-            ),
-            ShaderMask(
-              shaderCallback: (bounds) => const LinearGradient(
-                colors: [Color(0xFFC084FC), Color(0xFF6366F1)], // Purple to Indigo
-              ).createShader(bounds),
-              child: Text(
-                'Científica & Matricial',
-                style: GoogleFonts.outfit(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+            Expanded(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Calculadora ',
+                      style: GoogleFonts.outfit(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w400,
+                        color: primaryText,
+                      ),
+                    ),
+                    ShaderMask(
+                      shaderCallback: (bounds) => const LinearGradient(
+                        colors: [Color(0xFFC084FC), Color(0xFF6366F1)], // Purple to Indigo
+                      ).createShader(bounds),
+                      child: Text(
+                        'Científica & Suite Avanzada',
+                        style: GoogleFonts.outfit(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -222,7 +236,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         Padding(
           padding: const EdgeInsets.only(left: 48.0), // Alinear con el título
           child: Text(
-            'Herramientas matemáticas avanzadas con interfaz táctil premium',
+            'Cálculo científico, matrices 4x4, herramientas de negocios y graficador 2D',
             style: GoogleFonts.outfit(
               fontSize: 13,
               color: secondaryText,
@@ -241,26 +255,23 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     return Row(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Columna 1: Científica (Fijo / Constrained)
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 390),
-          child: ScientificScreen(state: _state),
-        ),
-        const SizedBox(width: 20),
-        // Columna 2: Matrices (Expanded, centrado)
+        // Columna principal: Herramienta seleccionada con selector en cabecera
         Expanded(
-          child: Container(
-            alignment: Alignment.topLeft,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 680),
-              child: MatrixScreen(state: _state),
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildDesktopToolSelector(),
+              const SizedBox(height: 12),
+              Expanded(
+                child: _buildDesktopToolContent(),
+              ),
+            ],
           ),
         ),
         const SizedBox(width: 20),
-        // Columna 3: Historial / Manual (Fijo con pestaña)
+        // Columna Lateral: Historial / Manual (Fijo con pestaña)
         ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 320),
+          constraints: const BoxConstraints(maxWidth: 340),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -340,10 +351,23 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   ],
                 ),
               ),
-              // Contenido del panel seleccionado
+              // Contenido del panel derecho seleccionado
               Expanded(
                 child: _selectedDesktopRightPanel == 0
-                    ? HistoryScreen(state: _state)
+                    ? HistoryScreen(
+                        state: _state,
+                        onTabChangeRequested: (tab) {
+                          if (tab == 'scientific') {
+                            setState(() => _selectedDesktopTool = 0);
+                          } else if (tab == 'matrix') {
+                            setState(() => _selectedDesktopTool = 1);
+                          } else if (tab == 'business') {
+                            setState(() => _selectedDesktopTool = 2);
+                          } else if (tab == 'graph') {
+                            setState(() => _selectedDesktopTool = 3);
+                          }
+                        },
+                      )
                     : const ManualScreen(),
               ),
             ],
@@ -351,6 +375,102 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         ),
       ],
     );
+  }
+
+  Widget _buildDesktopToolSelector() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final tools = [
+      {'title': 'Científica', 'icon': Icons.calculate_outlined},
+      {'title': 'Matrices 4x4', 'icon': Icons.grid_on_outlined},
+      {'title': 'Negocios', 'icon': Icons.business_center_outlined},
+      {'title': 'Graficador 2D', 'icon': Icons.show_chart_rounded},
+    ];
+
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: isDark ? Colors.white.withValues(alpha: 0.04) : Colors.black.withValues(alpha: 0.03),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06),
+        ),
+      ),
+      child: Row(
+        children: List.generate(tools.length, (index) {
+          final isSelected = _selectedDesktopTool == index;
+          final tool = tools[index];
+          return Expanded(
+            child: InkWell(
+              onTap: () {
+                setState(() {
+                  _selectedDesktopTool = index;
+                });
+              },
+              borderRadius: BorderRadius.circular(9),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? (isDark ? Colors.white.withValues(alpha: 0.09) : Colors.black.withValues(alpha: 0.06))
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(9),
+                  border: Border.all(
+                    color: isSelected
+                        ? const Color(0xFFC084FC).withValues(alpha: 0.3)
+                        : Colors.transparent,
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      tool['icon'] as IconData,
+                      size: 17,
+                      color: isSelected ? const Color(0xFFC084FC) : (isDark ? Colors.white60 : Colors.black54),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      tool['title'] as String,
+                      style: GoogleFonts.outfit(
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                        fontSize: 13,
+                        color: isSelected ? const Color(0xFFC084FC) : (isDark ? Colors.white70 : Colors.black54),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _buildDesktopToolContent() {
+    switch (_selectedDesktopTool) {
+      case 0:
+        return Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 480),
+            child: ScientificScreen(state: _state),
+          ),
+        );
+      case 1:
+        return Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 850),
+            child: MatrixScreen(state: _state),
+          ),
+        );
+      case 2:
+        return BusinessScreen(state: _state);
+      case 3:
+        return GraphScreen(state: _state);
+      default:
+        return ScientificScreen(state: _state);
+    }
   }
 
   Widget _buildMobileLayout() {
@@ -369,6 +489,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           ),
           child: TabBar(
             controller: _tabController,
+            isScrollable: true,
+            tabAlignment: TabAlignment.start,
             indicator: BoxDecoration(
               color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(10),
@@ -379,10 +501,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             labelStyle: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13),
             unselectedLabelStyle: GoogleFonts.outfit(fontWeight: FontWeight.w500, fontSize: 13),
             tabs: const [
-              Tab(text: 'Científica'),
-              Tab(text: 'Matrices 2x2'),
-              Tab(text: 'Historial'),
-              Tab(text: 'Manual'),
+              Tab(icon: Icon(Icons.calculate_outlined, size: 16), text: 'Científica'),
+              Tab(icon: Icon(Icons.grid_on_outlined, size: 16), text: 'Matrices'),
+              Tab(icon: Icon(Icons.business_center_outlined, size: 16), text: 'Negocios'),
+              Tab(icon: Icon(Icons.show_chart_rounded, size: 16), text: 'Gráficas'),
+              Tab(icon: Icon(Icons.history_rounded, size: 16), text: 'Historial'),
+              Tab(icon: Icon(Icons.help_outline_rounded, size: 16), text: 'Manual'),
             ],
           ),
         ),
@@ -394,13 +518,23 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             children: [
               ScientificScreen(state: _state),
               MatrixScreen(state: _state),
+              BusinessScreen(state: _state),
+              GraphScreen(state: _state),
               HistoryScreen(
                 state: _state,
                 onTabChangeRequested: (tab) {
                   if (tab == 'scientific') {
                     _tabController.animateTo(0);
+                    setState(() => _selectedDesktopTool = 0);
                   } else if (tab == 'matrix') {
                     _tabController.animateTo(1);
+                    setState(() => _selectedDesktopTool = 1);
+                  } else if (tab == 'business') {
+                    _tabController.animateTo(2);
+                    setState(() => _selectedDesktopTool = 2);
+                  } else if (tab == 'graph') {
+                    _tabController.animateTo(3);
+                    setState(() => _selectedDesktopTool = 3);
                   }
                 },
               ),
@@ -422,168 +556,301 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         return Drawer(
           backgroundColor: isDark ? const Color(0xFF0F0C1B) : const Color(0xFFF3F4F6),
           child: SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Encabezado
-                Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          ShaderMask(
-                            shaderCallback: (bounds) => const LinearGradient(
-                              colors: [Color(0xFFC084FC), Color(0xFF6366F1)],
-                            ).createShader(bounds),
-                            child: Text(
-                              'Ajustes',
-                              style: GoogleFonts.outfit(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Encabezado
+                  Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            ShaderMask(
+                              shaderCallback: (bounds) => const LinearGradient(
+                                colors: [Color(0xFFC084FC), Color(0xFF6366F1)],
+                              ).createShader(bounds),
+                              child: Text(
+                                'Ajustes & Modos',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Personaliza tu experiencia matemática',
-                        style: GoogleFonts.outfit(
-                          fontSize: 13,
-                          color: isDark ? Colors.white38 : Colors.black45,
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                Divider(height: 1, color: isDark ? Colors.white10 : Colors.black12),
-                const SizedBox(height: 16),
-                
-                // Título de la sección de tema
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
-                  child: Text(
-                    'APARIENCIA / TEMA',
-                    style: GoogleFonts.outfit(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white30 : Colors.black38,
-                      letterSpacing: 1.5,
+                        const SizedBox(height: 8),
+                        Text(
+                          'Personaliza tu experiencia matemática',
+                          style: GoogleFonts.outfit(
+                            fontSize: 13,
+                            color: isDark ? Colors.white38 : Colors.black45,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-                
-                // Opciones de tema
-                _buildThemeOption(
-                  context: context,
-                  title: 'Modo Claro',
-                  icon: Icons.light_mode_outlined,
-                  mode: ThemeMode.light,
-                  currentMode: themeManager.themeMode,
-                  onTap: () => themeManager.setThemeMode(ThemeMode.light),
-                ),
-                _buildThemeOption(
-                  context: context,
-                  title: 'Modo Oscuro',
-                  icon: Icons.dark_mode_outlined,
-                  mode: ThemeMode.dark,
-                  currentMode: themeManager.themeMode,
-                  onTap: () => themeManager.setThemeMode(ThemeMode.dark),
-                ),
-                _buildThemeOption(
-                  context: context,
-                  title: 'Predeterminado del sistema',
-                  icon: Icons.brightness_auto_outlined,
-                  mode: ThemeMode.system,
-                  currentMode: themeManager.themeMode,
-                  onTap: () => themeManager.setThemeMode(ThemeMode.system),
-                ),
-                
-                const SizedBox(height: 16),
-                Divider(height: 1, color: isDark ? Colors.white10 : Colors.black12),
-                const SizedBox(height: 16),
-                
-                // Título de la sección de preferencias
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
-                  child: Text(
-                    'PREFERENCIAS',
-                    style: GoogleFonts.outfit(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white30 : Colors.black38,
-                      letterSpacing: 1.5,
-                    ),
-                  ),
-                ),
-                
-                ListenableBuilder(
-                  listenable: _state,
-                  builder: (context, _) {
-                    return _buildSwitchOption(
-                      context: context,
-                      title: 'Sonido al presionar teclas',
-                      icon: Icons.volume_up_outlined,
-                      value: AppConfig.clickSoundEnabled,
-                      onChanged: (val) {
-                        _state.toggleClickSound();
-                      },
-                    );
-                  },
-                ),
+                  Divider(height: 1, color: isDark ? Colors.white10 : Colors.black12),
+                  const SizedBox(height: 12),
 
-                const SizedBox(height: 16),
-                Divider(height: 1, color: isDark ? Colors.white10 : Colors.black12),
-                const SizedBox(height: 16),
-                
-                // Título de la sección legal
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
-                  child: Text(
-                    'LEGAL Y POLÍTICAS',
-                    style: GoogleFonts.outfit(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white30 : Colors.black38,
-                      letterSpacing: 1.5,
+                  // Título de la sección de herramientas
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                    child: Text(
+                      'MODOS Y HERRAMIENTAS',
+                      style: GoogleFonts.outfit(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? Colors.white30 : Colors.black38,
+                        letterSpacing: 1.5,
+                      ),
                     ),
                   ),
-                ),
-                
-                _buildDrawerLinkOption(
-                  context: context,
-                  title: 'Política de Privacidad',
-                  icon: Icons.privacy_tip_outlined,
-                  url: AppConfig.privacyPolicyUrl,
-                ),
-                _buildDrawerLinkOption(
-                  context: context,
-                  title: 'Términos y Condiciones',
-                  icon: Icons.description_outlined,
-                  url: AppConfig.termsAndConditionsUrl,
-                ),
-                
-                const Spacer(),
-                // Información de la versión
-                Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Text(
-                    'Calculadora Científica & Matricial\nVersión 1.0.0',
-                    style: GoogleFonts.outfit(
-                      fontSize: 11,
-                      color: isDark ? Colors.white24 : Colors.black38,
-                    ),
-                    textAlign: TextAlign.center,
+
+                  _buildDrawerToolOption(
+                    context: context,
+                    title: 'Calculadora Científica',
+                    icon: Icons.calculate_outlined,
+                    onTap: () {
+                      _tabController.animateTo(0);
+                      setState(() => _selectedDesktopTool = 0);
+                      Navigator.of(context).pop();
+                    },
                   ),
-                ),
-              ],
+                  _buildDrawerToolOption(
+                    context: context,
+                    title: 'Matrices (hasta 4x4)',
+                    icon: Icons.grid_on_outlined,
+                    onTap: () {
+                      _tabController.animateTo(1);
+                      setState(() => _selectedDesktopTool = 1);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  _buildDrawerToolOption(
+                    context: context,
+                    title: 'Calculadora de Negocios',
+                    icon: Icons.business_center_outlined,
+                    onTap: () {
+                      _tabController.animateTo(2);
+                      setState(() => _selectedDesktopTool = 2);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  _buildDrawerToolOption(
+                    context: context,
+                    title: 'Graficador 2D',
+                    icon: Icons.show_chart_rounded,
+                    onTap: () {
+                      _tabController.animateTo(3);
+                      setState(() => _selectedDesktopTool = 3);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  _buildDrawerToolOption(
+                    context: context,
+                    title: 'Historial de Cálculos',
+                    icon: Icons.history_rounded,
+                    onTap: () {
+                      _tabController.animateTo(4);
+                      setState(() => _selectedDesktopRightPanel = 0);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  _buildDrawerToolOption(
+                    context: context,
+                    title: 'Manual de Ayuda',
+                    icon: Icons.help_outline_rounded,
+                    onTap: () {
+                      _tabController.animateTo(5);
+                      setState(() => _selectedDesktopRightPanel = 1);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+
+                  const SizedBox(height: 12),
+                  Divider(height: 1, color: isDark ? Colors.white10 : Colors.black12),
+                  const SizedBox(height: 12),
+                  
+                  // Título de la sección de tema
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                    child: Text(
+                      'APARIENCIA / TEMA',
+                      style: GoogleFonts.outfit(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? Colors.white30 : Colors.black38,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                  ),
+                  
+                  // Opciones de tema
+                  _buildThemeOption(
+                    context: context,
+                    title: 'Modo Claro',
+                    icon: Icons.light_mode_outlined,
+                    mode: ThemeMode.light,
+                    currentMode: themeManager.themeMode,
+                    onTap: () => themeManager.setThemeMode(ThemeMode.light),
+                  ),
+                  _buildThemeOption(
+                    context: context,
+                    title: 'Modo Oscuro',
+                    icon: Icons.dark_mode_outlined,
+                    mode: ThemeMode.dark,
+                    currentMode: themeManager.themeMode,
+                    onTap: () => themeManager.setThemeMode(ThemeMode.dark),
+                  ),
+                  _buildThemeOption(
+                    context: context,
+                    title: 'Predeterminado del sistema',
+                    icon: Icons.brightness_auto_outlined,
+                    mode: ThemeMode.system,
+                    currentMode: themeManager.themeMode,
+                    onTap: () => themeManager.setThemeMode(ThemeMode.system),
+                  ),
+                  
+                  const SizedBox(height: 12),
+                  Divider(height: 1, color: isDark ? Colors.white10 : Colors.black12),
+                  const SizedBox(height: 12),
+                  
+                  // Título de la sección de preferencias
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                    child: Text(
+                      'PREFERENCIAS',
+                      style: GoogleFonts.outfit(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? Colors.white30 : Colors.black38,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                  ),
+                  
+                  ListenableBuilder(
+                    listenable: _state,
+                    builder: (context, _) {
+                      return _buildSwitchOption(
+                        context: context,
+                        title: 'Sonido al presionar teclas',
+                        icon: Icons.volume_up_outlined,
+                        value: AppConfig.clickSoundEnabled,
+                        onChanged: (val) {
+                          _state.toggleClickSound();
+                        },
+                      );
+                    },
+                  ),
+
+                  const SizedBox(height: 12),
+                  Divider(height: 1, color: isDark ? Colors.white10 : Colors.black12),
+                  const SizedBox(height: 12),
+                  
+                  // Título de la sección legal
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                    child: Text(
+                      'LEGAL Y POLÍTICAS',
+                      style: GoogleFonts.outfit(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? Colors.white30 : Colors.black38,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                  ),
+                  
+                  _buildDrawerLinkOption(
+                    context: context,
+                    title: 'Política de Privacidad',
+                    icon: Icons.privacy_tip_outlined,
+                    url: AppConfig.privacyPolicyUrl,
+                  ),
+                  _buildDrawerLinkOption(
+                    context: context,
+                    title: 'Términos y Condiciones',
+                    icon: Icons.description_outlined,
+                    url: AppConfig.termsAndConditionsUrl,
+                  ),
+                  
+                  const SizedBox(height: 24),
+                  // Información de la versión
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                    child: Text(
+                      'Calculadora Científica Suite\nVersión 1.1.0',
+                      style: GoogleFonts.outfit(
+                        fontSize: 11,
+                        color: isDark ? Colors.white24 : Colors.black38,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildDrawerToolOption({
+    required BuildContext context,
+    required String title,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 3.0),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+          decoration: BoxDecoration(
+            color: isDark ? Colors.white.withValues(alpha: 0.03) : Colors.black.withValues(alpha: 0.02),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.04),
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                color: const Color(0xFFC084FC),
+                size: 20,
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Text(
+                  title,
+                  style: GoogleFonts.outfit(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w500,
+                    color: isDark ? Colors.white : Colors.black87,
+                  ),
+                ),
+              ),
+              Icon(
+                Icons.chevron_right,
+                color: isDark ? Colors.white24 : Colors.black26,
+                size: 18,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

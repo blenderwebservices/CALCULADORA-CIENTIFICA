@@ -27,15 +27,9 @@ class CalculatorState extends ChangeNotifier {
   int matrixBRows = 2;
   int matrixBCols = 2;
 
-  // Datos de matrices 2x2 (se inicializan en ceros)
-  List<List<double>> matrixA = [
-    [0.0, 0.0],
-    [0.0, 0.0],
-  ];
-  List<List<double>> matrixB = [
-    [0.0, 0.0],
-    [0.0, 0.0],
-  ];
+  // Datos de matrices (hasta 4x4, se inicializan en ceros)
+  List<List<double>> matrixA = List.generate(4, (_) => List.filled(4, 0.0));
+  List<List<double>> matrixB = List.generate(4, (_) => List.filled(4, 0.0));
 
   double scalarK = 2.0;
   List<List<double>>? matrixResult;
@@ -313,13 +307,13 @@ class CalculatorState extends ChangeNotifier {
   // ==========================================
 
   void updateMatrixADimensions(int rows, int cols) {
-    matrixARows = rows;
-    matrixACols = cols;
+    matrixARows = rows.clamp(1, 4);
+    matrixACols = cols.clamp(1, 4);
 
     // Generar nueva matriz preservando celdas anteriores si caben
-    final List<List<double>> temp = List.generate(2, (_) => List.filled(2, 0.0));
-    for (int r = 0; r < 2; r++) {
-      for (int c = 0; c < 2; c++) {
+    final List<List<double>> temp = List.generate(4, (_) => List.filled(4, 0.0));
+    for (int r = 0; r < 4; r++) {
+      for (int c = 0; c < 4; c++) {
         if (r < matrixA.length && c < matrixA[r].length) {
           temp[r][c] = matrixA[r][c];
         }
@@ -330,12 +324,12 @@ class CalculatorState extends ChangeNotifier {
   }
 
   void updateMatrixBDimensions(int rows, int cols) {
-    matrixBRows = rows;
-    matrixBCols = cols;
+    matrixBRows = rows.clamp(1, 4);
+    matrixBCols = cols.clamp(1, 4);
 
-    final List<List<double>> temp = List.generate(2, (_) => List.filled(2, 0.0));
-    for (int r = 0; r < 2; r++) {
-      for (int c = 0; c < 2; c++) {
+    final List<List<double>> temp = List.generate(4, (_) => List.filled(4, 0.0));
+    for (int r = 0; r < 4; r++) {
+      for (int c = 0; c < 4; c++) {
         if (r < matrixB.length && c < matrixB[r].length) {
           temp[r][c] = matrixB[r][c];
         }
@@ -629,14 +623,8 @@ class CalculatorState extends ChangeNotifier {
   }
 
   void clearMatrices() {
-    matrixA = [
-      [0.0, 0.0],
-      [0.0, 0.0]
-    ];
-    matrixB = [
-      [0.0, 0.0],
-      [0.0, 0.0]
-    ];
+    matrixA = List.generate(4, (_) => List.filled(4, 0.0));
+    matrixB = List.generate(4, (_) => List.filled(4, 0.0));
     matrixResult = null;
     scalarResult = null;
     matrixError = null;
@@ -646,13 +634,10 @@ class CalculatorState extends ChangeNotifier {
   void copyResultToA() {
     if (matrixResult == null) return;
     final res = matrixResult!;
-    matrixARows = res.length;
-    matrixACols = res[0].length;
+    matrixARows = res.length.clamp(1, 4);
+    matrixACols = res[0].length.clamp(1, 4);
 
-    matrixA = [
-      [0.0, 0.0],
-      [0.0, 0.0]
-    ];
+    matrixA = List.generate(4, (_) => List.filled(4, 0.0));
     for (int r = 0; r < matrixARows; r++) {
       for (int c = 0; c < matrixACols; c++) {
         matrixA[r][c] = res[r][c];
@@ -664,13 +649,10 @@ class CalculatorState extends ChangeNotifier {
   void copyResultToB() {
     if (matrixResult == null) return;
     final res = matrixResult!;
-    matrixBRows = res.length;
-    matrixBCols = res[0].length;
+    matrixBRows = res.length.clamp(1, 4);
+    matrixBCols = res[0].length.clamp(1, 4);
 
-    matrixB = [
-      [0.0, 0.0],
-      [0.0, 0.0]
-    ];
+    matrixB = List.generate(4, (_) => List.filled(4, 0.0));
     for (int r = 0; r < matrixBRows; r++) {
       for (int c = 0; c < matrixBCols; c++) {
         matrixB[r][c] = res[r][c];
@@ -752,6 +734,37 @@ class CalculatorState extends ChangeNotifier {
         notifyListeners();
       }
     }
+  }
+
+  void addBusinessHistoryItem({
+    required String title,
+    required String expression,
+    required String result,
+    double? numericResult,
+  }) {
+    _addHistoryItem(
+      HistoryItem(
+        type: 'business',
+        expression: '$title: $expression =',
+        result: result,
+        numericResult: numericResult,
+        timestamp: DateTime.now().millisecondsSinceEpoch,
+      ),
+    );
+  }
+
+  void addGraphHistoryItem({
+    required String expression,
+    required String result,
+  }) {
+    _addHistoryItem(
+      HistoryItem(
+        type: 'graph',
+        expression: 'f(x) = $expression',
+        result: result,
+        timestamp: DateTime.now().millisecondsSinceEpoch,
+      ),
+    );
   }
 
   // ==========================================
