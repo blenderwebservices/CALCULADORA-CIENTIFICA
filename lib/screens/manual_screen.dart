@@ -140,6 +140,28 @@ class _ManualScreenState extends State<ManualScreen> {
       ]
     },
     {
+      'title': 'Calculadora Contable & Teneduría de Libros',
+      'icon': Icons.receipt_long_outlined,
+      'color': const Color(0xFF0EA5E9),
+      'content': [
+        {'type': 'text', 'text': 'Suite profesional diseñada para contadores, auxiliares contables, auditores y estudiantes de finanzas:'},
+        {'type': 'subtitle', 'text': '1. Sumadora de Escritorio & Cinta de Auditoría (Paper Tape):'},
+        {'type': 'text', 'text': '• Cinta de papel continua: Registra cronológicamente cada débito (+) y crédito (-), subtotales (ST) y total general (TOTAL).\n• Selector de decimales: Flotante (F) o fijos (0, 2, 3, 4 decimales).\n• Modo ADD2: Al activar ADD2, cualquier cifra tecleada (ej: 1550) se introduce automáticamente con dos decimales de centavos (15.50).\n• Selectores de redondeo: 5/4 (aritmético estándar), CUT (truncamiento) y UP (techo).\n• Teclas TAX+ y TAX-: Aplican o desglosan el porcentaje de IVA/impuesto configurable.\n• Tecla MU (Mark-Up): Calcula el precio de venta necesario para obtener el margen deseado sobre el acumulador.\n• Acciones de cinta: Copiar la cinta formateada al portapapeles o guardarla en el historial de operaciones.'},
+        {'type': 'subtitle', 'text': '2. Depreciación de Activos Fijos:'},
+        {'type': 'example', 'expr': 'Línea Recta', 'res': '(Costo - Rescate) / Vida Útil', 'desc': 'Cuota anual fija y constante a lo largo de los ejercicios contables.'},
+        {'type': 'example', 'expr': 'Suma de Dígitos (SYD)', 'res': 'Base * (Años Restantes / SYD)', 'desc': 'Depreciación acelerada donde los primeros años absorben mayor cuota.'},
+        {'type': 'example', 'expr': 'Saldo Decreciente (DDB)', 'res': 'Valor en Libros * (2 / Vida Útil)', 'desc': 'Doble cuota decreciente sin exceder el valor de rescate.'},
+        {'type': 'text', 'text': 'Genera una tabla interactiva detallada con: Año, Gasto por Depreciación, Depreciación Acumulada y Valor en Libros restante.'},
+        {'type': 'subtitle', 'text': '3. Ratios Financiero-Contables:'},
+        {'type': 'example', 'expr': 'Razón Corriente', 'res': 'Activo Circulante / Pasivo Circulante', 'desc': 'Mide la capacidad de pago de obligaciones a corto plazo (Óptimo >= 1.5).'},
+        {'type': 'example', 'expr': 'Prueba Ácida', 'res': '(Activo Circulante - Inventarios) / Pasivo Circulante', 'desc': 'Capacidad de pago inmediata sin depender de ventas (Óptimo >= 1.0).'},
+        {'type': 'example', 'expr': 'Endeudamiento %', 'res': 'Pasivo Total / Activo Total * 100', 'desc': 'Porcentaje de activos financiados mediante deuda.'},
+        {'type': 'example', 'expr': 'ROA / ROE %', 'res': 'Utilidad Neta / Activos (o Patrimonio) * 100', 'desc': 'Rentabilidad económica del activo y financiera para accionistas.'},
+        {'type': 'subtitle', 'text': '4. Cálculo de Nómina & Retenciones:'},
+        {'type': 'text', 'text': 'Calcula el Salario Bruto, Retención de Impuestos (ISR), Aportes a la Seguridad Social (obrero y patronal), Salario Neto a pagar y el Costo Laboral Total para la empresa.'},
+      ]
+    },
+    {
       'title': 'Graficador de Funciones 2D',
       'icon': Icons.show_chart,
       'color': const Color(0xFF38BDF8),

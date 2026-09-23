@@ -124,6 +124,7 @@ class HistoryScreen extends StatelessWidget {
         final isSci = item.type == 'sci';
         final isMatrix = item.type == 'matrix';
         final isBusiness = item.type == 'business';
+        final isAccounting = item.type == 'accounting';
         final isGraph = item.type == 'graph';
         final isDark = Theme.of(context).brightness == Brightness.dark;
         final primaryText = isDark ? Colors.white : const Color(0xFF0F0C1B);
@@ -138,6 +139,9 @@ class HistoryScreen extends StatelessWidget {
         } else if (isBusiness) {
           badgeText = 'NEGOCIOS';
           badgeColor = const Color(0xFF10B981);
+        } else if (isAccounting) {
+          badgeText = 'CONTABLE';
+          badgeColor = const Color(0xFF0EA5E9);
         } else if (isGraph) {
           badgeText = 'GRÁFICAS';
           badgeColor = const Color(0xFF0284C7);

@@ -767,6 +767,23 @@ class CalculatorState extends ChangeNotifier {
     );
   }
 
+  void addAccountingHistoryItem({
+    required String title,
+    required String expression,
+    required String result,
+    double? numericResult,
+  }) {
+    _addHistoryItem(
+      HistoryItem(
+        type: 'accounting',
+        expression: '$title: $expression =',
+        result: result,
+        numericResult: numericResult,
+        timestamp: DateTime.now().millisecondsSinceEpoch,
+      ),
+    );
+  }
+
   // ==========================================
   // 7. PREFERENCIAS DE SONIDO
   // ==========================================
