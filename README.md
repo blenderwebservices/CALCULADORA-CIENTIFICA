@@ -15,7 +15,7 @@ Esta app fue convertida de su versión web original a Flutter, manteniendo toda 
 - **Controles de Memoria:** Soporte de almacenamiento de memoria completo (`MC`, `MR`, `M+`, `M-`, `MS`).
 
 ### 2. Calculadora de Matrices
-- **Matrices 2x2 Interactivas:** Celdas dinámicas para entrada de datos numéricos en las matrices A y B.
+- **Matrices 2x2, 3x3 y 4x4 Interactivas:** Celdas dinámicas para entrada de datos numéricos en las matrices A y B.
 - **Ajuste de Dimensiones:** Permite seleccionar dimensiones entre 1x1 y 2x2 dinámicamente.
 - **Operaciones Matriciales:** Suma (`A+B`), Resta (`A-B`), Multiplicación (`A×B`), Transpuesta (`Aᵀ`), Determinante (`det`) e Inversa (`A⁻¹`).
 - **Aritmética Escalar:** Multiplicación por escalar `k`, con la posibilidad de importar el valor `k` directamente desde la pantalla de la calculadora científica.
