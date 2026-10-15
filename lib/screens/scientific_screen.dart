@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../widgets/glass_container.dart';
 import '../widgets/calc_button.dart';
 import '../utils/calculator_state.dart';
+import '../utils/theme_manager.dart';
 
 class ScientificScreen extends StatefulWidget {
   final CalculatorState state;
@@ -92,33 +93,105 @@ class _ScientificScreenState extends State<ScientificScreen> {
 
   Widget _buildScreen(BuildContext context) {
     final state = widget.state;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primaryText = isDark ? Colors.white : const Color(0xFF0F0C1B);
-    final secondaryText = isDark ? Colors.white.withValues(alpha: 0.5) : Colors.black.withValues(alpha: 0.5);
+    final theme = ThemeManager().currentTheme;
+    final primaryText = theme.lcdTextColor;
+    final secondaryText = theme.lcdSecondaryTextColor;
 
     return GlassContainer(
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+      color: theme.lcdBackground,
+      borderColor: theme.lcdBorderColor,
+      borderRadius: theme.isAuthenticLcd ? 14.0 : 20.0,
+      padding: EdgeInsets.symmetric(
+        vertical: theme.isAuthenticLcd ? 14 : 20,
+        horizontal: 16,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
+          // Barra de estado auténtica tipo LCD Casio
+          if (theme.isAuthenticLcd) ...[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      'S',
+                      style: GoogleFonts.shareTechMono(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: secondaryText.withValues(alpha: 0.35),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'A',
+                      style: GoogleFonts.shareTechMono(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: secondaryText.withValues(alpha: 0.35),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'M',
+                      style: GoogleFonts.shareTechMono(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: state.memoryValue != 0.0 ? primaryText : secondaryText.withValues(alpha: 0.35),
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Text(
+                      state.angleMode,
+                      style: GoogleFonts.shareTechMono(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: primaryText,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Math ▲',
+                      style: GoogleFonts.shareTechMono(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: primaryText.withValues(alpha: 0.8),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+          ],
           // Expresión superior
           Container(
-            height: 32,
+            height: 30,
             alignment: Alignment.centerRight,
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               reverse: true,
               child: Text(
                 state.expressionText,
-                style: GoogleFonts.outfit(
-                  fontSize: 18,
-                  color: secondaryText,
-                  letterSpacing: 1.0,
-                ),
+                style: theme.isAuthenticLcd
+                    ? GoogleFonts.shareTechMono(
+                        fontSize: 16,
+                        color: secondaryText,
+                        letterSpacing: 1.1,
+                      )
+                    : GoogleFonts.outfit(
+                        fontSize: 18,
+                        color: secondaryText,
+                        letterSpacing: 1.0,
+                      ),
               ),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           // Visor de entrada inferior
           Container(
             height: 52,
@@ -132,14 +205,21 @@ class _ScientificScreenState extends State<ScientificScreen> {
                 children: [
                   Text(
                     state.inputText,
-                    style: GoogleFonts.outfit(
-                      fontSize: 38,
-                      fontWeight: FontWeight.bold,
-                      color: primaryText,
-                    ),
+                    style: theme.isAuthenticLcd
+                        ? GoogleFonts.shareTechMono(
+                            fontSize: 34,
+                            fontWeight: FontWeight.bold,
+                            color: primaryText,
+                            letterSpacing: 1.4,
+                          )
+                        : GoogleFonts.outfit(
+                            fontSize: 38,
+                            fontWeight: FontWeight.bold,
+                            color: primaryText,
+                          ),
                   ),
                   if (!state.shouldResetScreen)
-                    _BlinkingCursor(),
+                    _BlinkingCursor(color: theme.isAuthenticLcd ? primaryText : const Color(0xFF6366F1)),
                 ],
               ),
             ),
@@ -151,8 +231,7 @@ class _ScientificScreenState extends State<ScientificScreen> {
 
   Widget _buildUtilityRow(BuildContext context) {
     final state = widget.state;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final secondaryText = isDark ? Colors.white.withValues(alpha: 0.6) : Colors.black.withValues(alpha: 0.6);
+    final theme = ThemeManager().currentTheme;
 
     return Row(
       children: [
@@ -163,16 +242,16 @@ class _ScientificScreenState extends State<ScientificScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.05),
+              color: theme.utilityButtonBg,
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.08)),
+              border: Border.all(color: theme.cardBorderColor),
             ),
             child: Text(
               state.angleMode,
               style: GoogleFonts.outfit(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFFC084FC), // light purple
+                color: theme.utilityButtonText,
               ),
             ),
           ),
@@ -197,11 +276,11 @@ class _ScientificScreenState extends State<ScientificScreen> {
           ),
         const Spacer(),
         // Controles de memoria MC, MR, M+, M-, MS
-        _buildMemoryButton('MC', () => state.memoryClear(), 'Memory Clear', secondaryText),
-        _buildMemoryButton('MR', () => state.memoryRecall(), 'Memory Recall', secondaryText),
-        _buildMemoryButton('M+', () => state.memoryAdd(), 'Memory Add', secondaryText),
-        _buildMemoryButton('M-', () => state.memorySubtract(), 'Memory Subtract', secondaryText),
-        _buildMemoryButton('MS', () => state.memoryStore(), 'Memory Store', secondaryText),
+        _buildMemoryButton('MC', () => state.memoryClear(), 'Memory Clear', theme.utilityButtonText),
+        _buildMemoryButton('MR', () => state.memoryRecall(), 'Memory Recall', theme.utilityButtonText),
+        _buildMemoryButton('M+', () => state.memoryAdd(), 'Memory Add', theme.utilityButtonText),
+        _buildMemoryButton('M-', () => state.memorySubtract(), 'Memory Subtract', theme.utilityButtonText),
+        _buildMemoryButton('MS', () => state.memoryStore(), 'Memory Store', theme.utilityButtonText),
       ],
     );
   }
@@ -339,6 +418,10 @@ class _ScientificScreenState extends State<ScientificScreen> {
 }
 
 class _BlinkingCursor extends StatefulWidget {
+  final Color? color;
+
+  const _BlinkingCursor({this.color});
+
   @override
   __BlinkingCursorState createState() => __BlinkingCursorState();
 }
@@ -371,7 +454,7 @@ class __BlinkingCursorState extends State<_BlinkingCursor> with SingleTickerProv
           child: Container(
             width: 3,
             height: 38,
-            color: const Color(0xFF6366F1), // Indigo cursor
+            color: widget.color ?? const Color(0xFF6366F1),
           ),
         );
       },

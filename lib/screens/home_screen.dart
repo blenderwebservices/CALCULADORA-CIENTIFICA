@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../utils/app_config.dart';
 import '../utils/calculator_state.dart';
 import '../utils/theme_manager.dart';
+import '../models/app_theme_models.dart';
 import 'scientific_screen.dart';
 import 'matrix_screen.dart';
 import 'business_screen.dart';
@@ -84,21 +85,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 
   Widget _buildBackgroundGradient() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = ThemeManager().currentTheme;
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: isDark 
-              ? [
-                  const Color(0xFF0F0C1B), // Deep dark indigo
-                  const Color(0xFF07050E), // Very dark black-purple
-                ]
-              : [
-                  const Color(0xFFF3F0FA), // Soft lavender
-                  const Color(0xFFE5E7EB), // Soft gray-blue
-                ],
+          colors: theme.backgroundGradients,
         ),
       ),
     );
@@ -106,11 +99,15 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   Widget _buildBackgroundGlows(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+    final theme = ThemeManager().currentTheme;
+    final isDark = theme.isDark;
+    final glow1 = theme.glowColors.isNotEmpty ? theme.glowColors[0] : const Color(0xFF7C3AED);
+    final glow2 = theme.glowColors.length > 1 ? theme.glowColors[1] : const Color(0xFF6366F1);
+    final glow3 = theme.glowColors.length > 2 ? theme.glowColors[2] : const Color(0xFFEC4899);
+
     return Stack(
       children: [
-        // Esfera 1 (Púrpura arriba izquierda)
+        // Esfera 1 (Arriba izquierda)
         Positioned(
           top: -100,
           left: -100,
@@ -121,14 +118,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  const Color(0xFF7C3AED).withValues(alpha: isDark ? 0.18 : 0.12), // Violet
-                  const Color(0xFF7C3AED).withValues(alpha: 0.0),
+                  glow1.withValues(alpha: isDark ? 0.18 : 0.10),
+                  glow1.withValues(alpha: 0.0),
                 ],
               ),
             ),
           ),
         ),
-        // Esfera 2 (Índigo abajo derecha)
+        // Esfera 2 (Abajo derecha)
         Positioned(
           bottom: -150,
           right: -150,
@@ -139,14 +136,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  const Color(0xFF4F46E5).withValues(alpha: isDark ? 0.22 : 0.12), // Indigo
-                  const Color(0xFF4F46E5).withValues(alpha: 0.0),
+                  glow2.withValues(alpha: isDark ? 0.18 : 0.10),
+                  glow2.withValues(alpha: 0.0),
                 ],
               ),
             ),
           ),
         ),
-        // Esfera 3 (Naranja/Rosa centro izquierda)
+        // Esfera 3 (Centro izquierda)
         Positioned(
           top: size.height * 0.35,
           left: -200,
@@ -157,8 +154,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  const Color(0xFFEC4899).withValues(alpha: isDark ? 0.12 : 0.08), // Pink/Magenta
-                  const Color(0xFFEC4899).withValues(alpha: 0.0),
+                  glow3.withValues(alpha: isDark ? 0.12 : 0.06),
+                  glow3.withValues(alpha: 0.0),
                 ],
               ),
             ),
@@ -169,9 +166,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 
   Widget _buildHeader() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primaryText = isDark ? Colors.white : const Color(0xFF0F0C1B);
-    final secondaryText = isDark ? Colors.white38 : Colors.black45;
+    final theme = ThemeManager().currentTheme;
+    final isDark = theme.isDark;
+    final primaryText = theme.primaryTextColor;
+    final secondaryText = theme.secondaryTextColor;
     
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -216,8 +214,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       ),
                     ),
                     ShaderMask(
-                      shaderCallback: (bounds) => const LinearGradient(
-                        colors: [Color(0xFFC084FC), Color(0xFF6366F1)], // Purple to Indigo
+                      shaderCallback: (bounds) => LinearGradient(
+                        colors: [theme.secondaryAccent, theme.primaryAccent],
                       ).createShader(bounds),
                       child: Text(
                         'Científica & Suite Avanzada',
@@ -226,6 +224,41 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            // Botón rápido para cambiar a estilos Casio / Temas
+            InkWell(
+              onTap: () => _showThemeSelectionModal(context),
+              borderRadius: BorderRadius.circular(8),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                decoration: BoxDecoration(
+                  color: theme.primaryAccent.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: theme.primaryAccent.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.palette_outlined,
+                      color: theme.primaryAccent,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Estilos Casio',
+                      style: GoogleFonts.outfit(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: theme.primaryAccent,
                       ),
                     ),
                   ],
@@ -718,11 +751,56 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   Divider(height: 1, color: isDark ? Colors.white10 : Colors.black12),
                   const SizedBox(height: 12),
                   
-                  // Título de la sección de tema
+                  // Título de la sección de temas Casio
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'ESTILOS CASIO (FÍSICAS)',
+                          style: GoogleFonts.outfit(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: isDark ? Colors.white30 : Colors.black38,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: themeManager.currentTheme.primaryAccent.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            '6 MODELOS',
+                            style: GoogleFonts.outfit(
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                              color: themeManager.currentTheme.primaryAccent,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Lista de temas Casio
+                  ...AppThemes.allThemes
+                      .where((t) => t.category == 'Colección Casio')
+                      .map((t) => _buildCasioThemeOption(
+                            context: context,
+                            themeData: t,
+                            currentThemeId: themeManager.currentThemeId,
+                            onTap: () => themeManager.setAppTheme(t.id),
+                          )),
+
+                  const SizedBox(height: 8),
+                  // Título de la sección de temas clásicos
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
                     child: Text(
-                      'APARIENCIA / TEMA',
+                      'TEMAS CLÁSICOS DE LA SUITE',
                       style: GoogleFonts.outfit(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
@@ -731,32 +809,15 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       ),
                     ),
                   ),
-                  
-                  // Opciones de tema
-                  _buildThemeOption(
-                    context: context,
-                    title: 'Modo Claro',
-                    icon: Icons.light_mode_outlined,
-                    mode: ThemeMode.light,
-                    currentMode: themeManager.themeMode,
-                    onTap: () => themeManager.setThemeMode(ThemeMode.light),
-                  ),
-                  _buildThemeOption(
-                    context: context,
-                    title: 'Modo Oscuro',
-                    icon: Icons.dark_mode_outlined,
-                    mode: ThemeMode.dark,
-                    currentMode: themeManager.themeMode,
-                    onTap: () => themeManager.setThemeMode(ThemeMode.dark),
-                  ),
-                  _buildThemeOption(
-                    context: context,
-                    title: 'Predeterminado del sistema',
-                    icon: Icons.brightness_auto_outlined,
-                    mode: ThemeMode.system,
-                    currentMode: themeManager.themeMode,
-                    onTap: () => themeManager.setThemeMode(ThemeMode.system),
-                  ),
+
+                  ...AppThemes.allThemes
+                      .where((t) => t.category != 'Colección Casio')
+                      .map((t) => _buildCasioThemeOption(
+                            context: context,
+                            themeData: t,
+                            currentThemeId: themeManager.currentThemeId,
+                            onTap: () => themeManager.setAppTheme(t.id),
+                          )),
                   
                   const SizedBox(height: 12),
                   Divider(height: 1, color: isDark ? Colors.white10 : Colors.black12),
@@ -896,66 +957,113 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
-  Widget _buildThemeOption({
+  Widget _buildCasioThemeOption({
     required BuildContext context,
-    required String title,
-    required IconData icon,
-    required ThemeMode mode,
-    required ThemeMode currentMode,
+    required AppThemeData themeData,
+    required AppThemeId currentThemeId,
     required VoidCallback onTap,
   }) {
-    final isSelected = mode == currentMode;
+    final isSelected = themeData.id == currentThemeId;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 3.0),
       child: InkWell(
         onTap: () {
           onTap();
-          // Cerrar Drawer después de seleccionar la opción
           Navigator.of(context).pop();
         },
         borderRadius: BorderRadius.circular(12),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
             color: isSelected
-                ? const Color(0xFF6366F1).withValues(alpha: 0.15)
+                ? themeData.primaryAccent.withValues(alpha: 0.16)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isSelected
-                  ? const Color(0xFF6366F1).withValues(alpha: 0.3)
+                  ? themeData.primaryAccent.withValues(alpha: 0.6)
                   : Colors.transparent,
+              width: isSelected ? 1.5 : 1.0,
             ),
           ),
           child: Row(
             children: [
-              Icon(
-                icon,
-                color: isSelected
-                    ? const Color(0xFFC084FC)
-                    : (isDark ? Colors.white70 : Colors.black54),
-                size: 20,
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  title,
-                  style: GoogleFonts.outfit(
-                    fontSize: 14,
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                    color: isSelected
-                        ? const Color(0xFFC084FC)
-                        : (isDark ? Colors.white : Colors.black87),
+              // Swatch dual de colores (Chasis + Pantalla LCD)
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: themeData.scaffoldBackground,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: isDark ? Colors.white24 : Colors.black26,
+                    width: 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.2),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Container(
+                    width: 22,
+                    height: 14,
+                    decoration: BoxDecoration(
+                      color: themeData.lcdBackground,
+                      borderRadius: BorderRadius.circular(2),
+                      border: Border.all(
+                        color: themeData.lcdBorderColor,
+                        width: 0.8,
+                      ),
+                    ),
+                    child: Center(
+                      child: Container(
+                        width: 12,
+                        height: 2,
+                        color: themeData.lcdTextColor.withValues(alpha: 0.7),
+                      ),
+                    ),
                   ),
                 ),
               ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      themeData.name,
+                      style: GoogleFonts.outfit(
+                        fontSize: 13,
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                        color: isSelected
+                            ? (isDark ? Colors.white : const Color(0xFF0F0C1B))
+                            : (isDark ? Colors.white.withValues(alpha: 0.9) : Colors.black87),
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      themeData.subtitle,
+                      style: GoogleFonts.outfit(
+                        fontSize: 11,
+                        color: isDark ? Colors.white38 : Colors.black45,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
               if (isSelected)
-                const Icon(
-                  Icons.check_circle_outline,
-                  color: Color(0xFFC084FC),
+                Icon(
+                  Icons.check_circle_rounded,
+                  color: themeData.primaryAccent,
                   size: 20,
                 ),
             ],
@@ -964,6 +1072,139 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       ),
     );
   }
+
+  void _showThemeSelectionModal(BuildContext context) {
+    final themeManager = ThemeManager();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (modalContext) {
+        return ListenableBuilder(
+          listenable: themeManager,
+          builder: (context, _) {
+            final activeTheme = themeManager.currentTheme;
+            final isModalDark = activeTheme.isDark;
+
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.78,
+              decoration: BoxDecoration(
+                color: isModalDark ? const Color(0xFF131024) : Colors.white,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                border: Border.all(
+                  color: isModalDark ? Colors.white12 : Colors.black12,
+                ),
+              ),
+              child: Column(
+                children: [
+                  const SizedBox(height: 12),
+                  // Barra deslizadora
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: isModalDark ? Colors.white24 : Colors.black26,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Estilos de Calculadoras Casio',
+                              style: GoogleFonts.outfit(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: isModalDark ? Colors.white : const Color(0xFF0F0C1B),
+                              ),
+                            ),
+                            Text(
+                              'Inspirado en modelos físicos reales de calculadoras',
+                              style: GoogleFonts.outfit(
+                                fontSize: 12,
+                                color: isModalDark ? Colors.white54 : Colors.black54,
+                              ),
+                            ),
+                          ],
+                        ),
+                        IconButton(
+                          onPressed: () => Navigator.of(modalContext).pop(),
+                          icon: Icon(
+                            Icons.close,
+                            color: isModalDark ? Colors.white54 : Colors.black54,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Divider(height: 1, color: isModalDark ? Colors.white10 : Colors.black12),
+                  Expanded(
+                    child: ListView(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                          child: Text(
+                            'MODELOS CASIO REALES',
+                            style: GoogleFonts.outfit(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: isModalDark ? Colors.white30 : Colors.black38,
+                              letterSpacing: 1.5,
+                            ),
+                          ),
+                        ),
+                        ...AppThemes.allThemes
+                            .where((t) => t.category == 'Colección Casio')
+                            .map((t) => _buildCasioThemeOption(
+                                  context: modalContext,
+                                  themeData: t,
+                                  currentThemeId: themeManager.currentThemeId,
+                                  onTap: () => themeManager.setAppTheme(t.id),
+                                )),
+                        const SizedBox(height: 12),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                          child: Text(
+                            'TEMAS CLÁSICOS DE LA SUITE',
+                            style: GoogleFonts.outfit(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: isModalDark ? Colors.white30 : Colors.black38,
+                              letterSpacing: 1.5,
+                            ),
+                          ),
+                        ),
+                        ...AppThemes.allThemes
+                            .where((t) => t.category != 'Colección Casio')
+                            .map((t) => _buildCasioThemeOption(
+                                  context: modalContext,
+                                  themeData: t,
+                                  currentThemeId: themeManager.currentThemeId,
+                                  onTap: () => themeManager.setAppTheme(t.id),
+                                )),
+                        const SizedBox(height: 24),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+
 
   Widget _buildDrawerLinkOption({
     required BuildContext context,

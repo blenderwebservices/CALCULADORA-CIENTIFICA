@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../utils/app_config.dart';
+import '../utils/theme_manager.dart';
 
 enum ButtonType {
   number,
@@ -57,68 +58,56 @@ class _CalcButtonState extends State<CalcButton> with SingleTickerProviderStateM
   }
 
   Color _getBackgroundColor(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = ThemeManager().currentTheme;
+    Color base;
     switch (widget.type) {
       case ButtonType.number:
-        if (isDark) {
-          return _isHovered 
-              ? Colors.white.withValues(alpha: 0.12) 
-              : Colors.white.withValues(alpha: 0.05);
-        } else {
-          return _isHovered 
-              ? Colors.black.withValues(alpha: 0.08) 
-              : Colors.black.withValues(alpha: 0.04);
-        }
+        base = theme.numButtonBg;
+        break;
       case ButtonType.scientific:
-        if (isDark) {
-          return _isHovered 
-              ? Colors.deepPurple.withValues(alpha: 0.25) 
-              : Colors.deepPurple.withValues(alpha: 0.12);
-        } else {
-          return _isHovered 
-              ? Colors.deepPurple.withValues(alpha: 0.15) 
-              : Colors.deepPurple.withValues(alpha: 0.07);
-        }
+        base = theme.sciButtonBg;
+        break;
       case ButtonType.operator:
-        if (isDark) {
-          return _isHovered 
-              ? Colors.orange.withValues(alpha: 0.4) 
-              : Colors.orange.withValues(alpha: 0.25);
-        } else {
-          return _isHovered 
-              ? Colors.orange.withValues(alpha: 0.22) 
-              : Colors.orange.withValues(alpha: 0.12);
-        }
+        base = theme.opButtonBg;
+        break;
       case ButtonType.action:
-        if (isDark) {
-          return _isHovered 
-              ? Colors.redAccent.withValues(alpha: 0.25) 
-              : Colors.white.withValues(alpha: 0.08);
+        if (widget.text == 'AC') {
+          base = theme.acButtonBg;
+        } else if (widget.text == 'DEL') {
+          base = theme.delButtonBg;
         } else {
-          return _isHovered 
-              ? Colors.redAccent.withValues(alpha: 0.15) 
-              : Colors.black.withValues(alpha: 0.05);
+          base = theme.sciButtonBg;
         }
+        break;
       case ButtonType.equals:
-        return const Color(0xFF6366F1); // Indigo accent color
+        base = theme.equalsButtonBg;
+        break;
     }
+
+    if (_isHovered) {
+      return Color.alphaBlend(Colors.white.withValues(alpha: theme.isDark ? 0.15 : 0.08), base);
+    }
+    return base;
   }
 
   Color _getTextColor() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = ThemeManager().currentTheme;
     switch (widget.type) {
       case ButtonType.number:
-        return isDark ? Colors.white : const Color(0xFF0F0C1B);
+        return theme.numButtonText;
       case ButtonType.scientific:
-        return isDark ? const Color(0xFFC084FC) : const Color(0xFF7C3AED);
+        return theme.sciButtonText;
       case ButtonType.operator:
-        return isDark ? const Color(0xFFFB923C) : const Color(0xFFEA580C);
+        return theme.opButtonText;
       case ButtonType.action:
-        return widget.text == 'AC' 
-            ? (isDark ? const Color(0xFFF87171) : const Color(0xFFDC2626)) 
-            : (isDark ? Colors.white70 : Colors.black54);
+        if (widget.text == 'AC') {
+          return theme.acButtonText;
+        } else if (widget.text == 'DEL') {
+          return theme.delButtonText;
+        }
+        return theme.sciButtonText;
       case ButtonType.equals:
-        return Colors.white;
+        return theme.equalsButtonText;
     }
   }
 
@@ -154,7 +143,7 @@ class _CalcButtonState extends State<CalcButton> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = ThemeManager().currentTheme;
     final Color bgColor = _getBackgroundColor(context);
     final Color textColor = _getTextColor();
     final double fontSize = _getFontSize();
@@ -205,19 +194,27 @@ class _CalcButtonState extends State<CalcButton> with SingleTickerProviderStateM
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: widget.type == ButtonType.equals
-                    ? const Color(0xFF818CF8).withValues(alpha: 0.5)
-                    : (isDark ? Colors.white.withValues(alpha: 0.06) : Colors.black.withValues(alpha: 0.06)),
+                    ? theme.equalsButtonBg.withValues(alpha: 0.6)
+                    : theme.cardBorderColor,
                 width: 1.0,
               ),
               boxShadow: widget.type == ButtonType.equals
                   ? [
                       BoxShadow(
-                        color: const Color(0xFF6366F1).withValues(alpha: 0.4),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
+                        color: theme.equalsButtonBg.withValues(alpha: 0.35),
+                        blurRadius: 10,
+                        offset: const Offset(0, 3),
                       ),
                     ]
-                  : [],
+                  : (theme.isAuthenticLcd
+                      ? [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: theme.isDark ? 0.25 : 0.08),
+                            blurRadius: 3,
+                            offset: const Offset(0, 1.5),
+                          ),
+                        ]
+                      : []),
             ),
             child: buttonBody,
           ),
