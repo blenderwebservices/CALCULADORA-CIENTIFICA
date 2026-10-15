@@ -170,3 +170,52 @@ La pestaña **Gráficas** proporciona un entorno interactivo en tiempo real para
 * **Conmutador Angular:** Alterna entre grados sexagesimales (**DEG**) y radianes (**RAD**) para funciones trigonométricas.
 * **Tabla de Valores:** Muestra una tabla comparativa de valores $x \rightarrow f(x)$ para un análisis puntual rápido.
 
+---
+
+## 10. Calculadora de Gastos Médicos Mayores (GMM) - México
+
+La pestaña **Gastos Médicos** proporciona un simulador actuarial y financiero integral para proyectar con exactitud el desembolso personal frente a una reclamación médica bajo las regulaciones y prácticas contractuales del mercado asegurador mexicano.
+
+### 10.1. Aseguradoras Integradas
+Incluye perfiles precargados con los estándares de deducible, coaseguro y topes de las compañías líderes en México:
+* **GNP Seguros** (Línea Azul Premier / Flexible)
+* **AXA Seguros** (Flex Plus / Círculo Médico)
+* **MetLife México** (MedicalLife / Práctico)
+* **Seguros Monterrey New York Life (SMNYL)** (Alfa Medical / Flex)
+* **Mapfre México** (Protección Médica a tu Medida)
+* **Seguros Inbursa** (Inbursa Medic / Integral)
+* **Seguros Banorte / BBVA**
+* **Personalizada / Otra Aseguradora** (Permite fijar libremente deducibles, coaseguros y condiciones de póliza)
+
+### 10.2. Términos Clave y Lógica Contractual
+1. **Deducible:** Cantidad fija en pesos pactada en la carátula de la póliza. Representa el primer tramo del gasto que absorbe el asegurado. **Si el gasto médico procedente no supera el deducible, la aseguradora no indemniza el evento.**
+2. **Cero Deducible por Accidente:** En caso de que la atención médica sea consecuencia de un accidente cubierto, la mayoría de pólizas en México eliminan el deducible (\$0 aplicable), permitiendo que el seguro opere desde el primer peso.
+3. **Coaseguro (%):** Copago porcentual (comúnmente 10%, 15% o 20%) aplicado sobre la base indemnizable restante tras restar el deducible.
+4. **Tope de Coaseguro (Stop Loss):** Cantidad máxima en pesos (ej. \$50,000 o \$60,000 MXN) que el asegurado pagará por concepto de coaseguro. Es la cláusula fundamental de protección patrimonial ante cuentas médicas de millones de pesos.
+5. **Red Hospitalaria y Nivel de Póliza:** Atenderse en un hospital fuera de la red o de nivel superior al contratado conlleva penalizaciones al coaseguro (típicamente +10% o +20%).
+6. **Gastos No Cubiertos:** Insumos personales (cama de acompañante, alimentos no médicos, pañales) y honorarios que sobrepasan el tabulador médico de la compañía; estos corren al 100% por cuenta del paciente.
+
+### 10.3. Algoritmo y Fórmulas de Liquidación
+$$\text{Gasto Procedente} = \max(0, \ \text{Gasto Total} - \text{Gastos No Cubiertos})$$
+
+Si $\text{Gasto Procedente} \le \text{Deducible Aplicado}$:
+$$\text{Pago Aseguradora} = \$0, \quad \text{Desembolso Asegurado} = \text{Gasto Total}$$
+
+Si $\text{Gasto Procedente} > \text{Deducible Aplicado}$:
+$$\text{Base Coaseguro} = \text{Gasto Procedente} - \text{Deducible Aplicado}$$
+$$\text{Coaseguro Calculado} = \text{Base Coaseguro} \times \left(\frac{\text{Coaseguro}\% + \text{Penalización Red}\%}{100}\right)$$
+$$\text{Coaseguro Efectivo} = \begin{cases} \min(\text{Coaseguro Calculado}, \ \text{Tope Coaseguro}) & \text{si tiene tope} \\ \text{Coaseguro Calculado} & \text{sin tope} \end{cases}$$
+$$\text{Pago Aseguradora} = \text{Base Coaseguro} - \text{Coaseguro Efectivo}$$
+$$\text{Desembolso Total Asegurado} = \text{Gastos No Cubiertos} + \text{Deducible Aplicado} + \text{Coaseguro Efectivo}$$
+
+### 10.4. Ejemplo Práctico
+* **Gasto Hospitalario + Honorarios:** \$800,000 MXN.
+* **Gastos No Cubiertos:** \$15,000 MXN.
+* **Gasto Procedente:** \$785,000 MXN.
+* **Deducible Contratado:** \$25,000 MXN.
+* **Base para Coaseguro:** \$785,000 - \$25,000 = \$760,000 MXN.
+* **Coaseguro (10%):** \$76,000 $\rightarrow$ **Topado a \$50,000 MXN (Ahorro de \$26,000 por Tope)**.
+* **Liquidación Final:**
+  * **Aseguradora Paga:** \$760,000 - \$50,000 = **\$710,000 MXN (88.75%)**
+  * **Asegurado Paga:** \$15,000 + \$25,000 + \$50,000 = **\$90,000 MXN (11.25%)**
+

@@ -162,6 +162,29 @@ class _ManualScreenState extends State<ManualScreen> {
       ]
     },
     {
+      'title': 'Gastos Médicos Mayores (GMM) - México',
+      'icon': Icons.health_and_safety_outlined,
+      'color': const Color(0xFFF97316),
+      'content': [
+        {'type': 'text', 'text': 'Simulador actuarial y financiero para proyectar copagos y coberturas en el mercado asegurador mexicano (GNP, AXA, MetLife, SMNYL, Mapfre, Inbursa, Banorte):'},
+        {'type': 'subtitle', 'text': '1. Conceptos Fundamentales en México:'},
+        {'type': 'example', 'expr': 'Deducible', 'res': 'Participación Fija', 'desc': 'Cantidad en pesos que el asegurado cubre antes de que la aseguradora indemnice. Si el gasto no supera el deducible, la aseguradora paga \$0.'},
+        {'type': 'example', 'expr': 'Cero Deducible por Accidente', 'res': 'Beneficio Contractual', 'desc': 'En caso de accidente, el deducible se reduce a \$0 en la mayoría de las pólizas mexicanas.'},
+        {'type': 'example', 'expr': 'Coaseguro (%)', 'res': 'Copago Porcentual', 'desc': 'Porcentaje (típicamente 10%) aplicado sobre la base: (Gasto Procedente - Deducible).'},
+        {'type': 'example', 'expr': 'Tope de Coaseguro (Stop Loss)', 'res': 'Límite Máximo en MXN', 'desc': 'Fija el desembolso máximo por coaseguro (ej: \$50,000 MXN), blindando tu patrimonio en siniestros millonarios.'},
+        {'type': 'subtitle', 'text': '2. Red Hospitalaria y Penalizaciones:'},
+        {'type': 'text', 'text': '• En Red Convenida: Se respetan las condiciones pactadas de deducible y coaseguro.\n• Fuera de Red / Nivel Superior: Aplica una penalización porcentual al coaseguro (habitualmente +10% o +20%).'},
+        {'type': 'subtitle', 'text': '3. Gastos No Cubiertos & Tabulador Quirúrgico:'},
+        {'type': 'text', 'text': '• Insumos no médicos (llamadas, cama extra, pañales) y honorarios que exceden el tabulador médico de la aseguradora corren 100% por cuenta del paciente.'},
+        {'type': 'subtitle', 'text': '4. Fórmulas de Liquidación:'},
+        {'type': 'formula', 'text': 'Gasto Procedente = Gasto Total - Gastos No Cubiertos'},
+        {'type': 'formula', 'text': 'Base Coaseguro = Gasto Procedente - Deducible Aplicado'},
+        {'type': 'formula', 'text': 'Coaseguro Efectivo = Mínimo(Base * Coaseguro%, Tope de Coaseguro)'},
+        {'type': 'formula', 'text': 'Pago Aseguradora = Gasto Procedente - Deducible Aplicado - Coaseguro Efectivo'},
+        {'type': 'formula', 'text': 'Desembolso Asegurado = No Cubiertos + Deducible Aplicado + Coaseguro Efectivo'},
+      ]
+    },
+    {
       'title': 'Graficador de Funciones 2D',
       'icon': Icons.show_chart,
       'color': const Color(0xFF38BDF8),

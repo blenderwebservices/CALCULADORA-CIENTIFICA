@@ -8,6 +8,7 @@ import 'scientific_screen.dart';
 import 'matrix_screen.dart';
 import 'business_screen.dart';
 import 'accounting_screen.dart';
+import 'gmm_screen.dart';
 import 'graph_screen.dart';
 import 'history_screen.dart';
 import 'manual_screen.dart';
@@ -24,12 +25,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   late TabController _tabController;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _selectedDesktopRightPanel = 0; // 0 para Historial, 1 para Manual
-  int _selectedDesktopTool = 0; // 0: Científica, 1: Matrices, 2: Negocios, 3: Contable, 4: Gráficas
+  int _selectedDesktopTool = 0; // 0: Científica, 1: Matrices, 2: Negocios, 3: Contable, 4: GMM, 5: Gráficas
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 7, vsync: this);
+    _tabController = TabController(length: 8, vsync: this);
   }
 
   @override
@@ -237,7 +238,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         Padding(
           padding: const EdgeInsets.only(left: 48.0), // Alinear con el título
           child: Text(
-            'Cálculo científico, matrices 4x4, suite contable, negocios y graficador 2D',
+            'Cálculo científico, matrices 4x4, suite contable, negocios, gastos médicos y graficador 2D',
             style: GoogleFonts.outfit(
               fontSize: 13,
               color: secondaryText,
@@ -366,8 +367,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             setState(() => _selectedDesktopTool = 2);
                           } else if (tab == 'accounting') {
                             setState(() => _selectedDesktopTool = 3);
-                          } else if (tab == 'graph') {
+                          } else if (tab == 'gmm') {
                             setState(() => _selectedDesktopTool = 4);
+                          } else if (tab == 'graph') {
+                            setState(() => _selectedDesktopTool = 5);
                           }
                         },
                       )
@@ -387,6 +390,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       {'title': 'Matrices 4x4', 'icon': Icons.grid_on_outlined},
       {'title': 'Negocios', 'icon': Icons.business_center_outlined},
       {'title': 'Contable', 'icon': Icons.receipt_long_outlined},
+      {'title': 'Gastos Médicos', 'icon': Icons.health_and_safety_outlined},
       {'title': 'Graficador 2D', 'icon': Icons.show_chart_rounded},
     ];
 
@@ -473,6 +477,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       case 3:
         return AccountingScreen(state: _state);
       case 4:
+        return GmmScreen(state: _state);
+      case 5:
         return GraphScreen(state: _state);
       default:
         return ScientificScreen(state: _state);
@@ -511,6 +517,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               Tab(icon: Icon(Icons.grid_on_outlined, size: 16), text: 'Matrices'),
               Tab(icon: Icon(Icons.business_center_outlined, size: 16), text: 'Negocios'),
               Tab(icon: Icon(Icons.receipt_long_outlined, size: 16), text: 'Contable'),
+              Tab(icon: Icon(Icons.health_and_safety_outlined, size: 16), text: 'Gastos Médicos'),
               Tab(icon: Icon(Icons.show_chart_rounded, size: 16), text: 'Gráficas'),
               Tab(icon: Icon(Icons.history_rounded, size: 16), text: 'Historial'),
               Tab(icon: Icon(Icons.help_outline_rounded, size: 16), text: 'Manual'),
@@ -527,6 +534,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               MatrixScreen(state: _state),
               BusinessScreen(state: _state),
               AccountingScreen(state: _state),
+              GmmScreen(state: _state),
               GraphScreen(state: _state),
               HistoryScreen(
                 state: _state,
@@ -543,9 +551,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   } else if (tab == 'accounting') {
                     _tabController.animateTo(3);
                     setState(() => _selectedDesktopTool = 3);
-                  } else if (tab == 'graph') {
+                  } else if (tab == 'gmm') {
                     _tabController.animateTo(4);
                     setState(() => _selectedDesktopTool = 4);
+                  } else if (tab == 'graph') {
+                    _tabController.animateTo(5);
+                    setState(() => _selectedDesktopTool = 5);
                   }
                 },
               ),
@@ -664,8 +675,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   ),
                   _buildDrawerToolOption(
                     context: context,
-                    title: 'Graficador 2D',
-                    icon: Icons.show_chart_rounded,
+                    title: 'Gastos Médicos Mayores (GMM)',
+                    icon: Icons.health_and_safety_outlined,
                     onTap: () {
                       _tabController.animateTo(4);
                       setState(() => _selectedDesktopTool = 4);
@@ -674,10 +685,20 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   ),
                   _buildDrawerToolOption(
                     context: context,
+                    title: 'Graficador 2D',
+                    icon: Icons.show_chart_rounded,
+                    onTap: () {
+                      _tabController.animateTo(5);
+                      setState(() => _selectedDesktopTool = 5);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  _buildDrawerToolOption(
+                    context: context,
                     title: 'Historial de Cálculos',
                     icon: Icons.history_rounded,
                     onTap: () {
-                      _tabController.animateTo(5);
+                      _tabController.animateTo(6);
                       setState(() => _selectedDesktopRightPanel = 0);
                       Navigator.of(context).pop();
                     },
@@ -687,7 +708,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     title: 'Manual de Ayuda',
                     icon: Icons.help_outline_rounded,
                     onTap: () {
-                      _tabController.animateTo(6);
+                      _tabController.animateTo(7);
                       setState(() => _selectedDesktopRightPanel = 1);
                       Navigator.of(context).pop();
                     },
